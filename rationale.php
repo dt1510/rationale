@@ -60,6 +60,7 @@ function prune_duplicate_theory_literals($theory) {
     return $theory;
 }
 
+#Theory in cnf.
 function prune_duplicate_theory_clauses($theory) {
     $theory=array_values($theory);
     $n=count($theory);
@@ -159,8 +160,7 @@ function antisubsumed_formulas($subsumer) {
     foreach($formulas as $formula) {    
         $formulas2=array_merge($formulas2,antisubsumed_formulas_from_antiinstantiation($formula));
     }
-    //array_push($formulas, $subsumer);
-    return $formulas2;
+    return prune_duplicate_cnfs($formulas2);
 }
 
 function antiinstantiate($formula, $terms) {
@@ -201,7 +201,7 @@ function antisubsumed_formulas_from_antiinstantiation($formula) {
     foreach($terms_combinations as $terms) {
         array_push($antisubsumed_formulas, antiinstantiate($formula, $terms));
     }
-    return $antisubsumed_formulas;
+    return prune_duplicate_cnfs($antisubsumed_formulas);
 }
 
 function array_power_set($array) {
