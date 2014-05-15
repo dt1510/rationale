@@ -14,8 +14,9 @@ $learning_problem_file=$argv[1];
 $content=file_get_contents($learning_problem_file);
 $background=get_background_knowledge_formulas($content);
 $examples=get_examples_formulas($content);
+$negative_examples=get_negative_examples_formulas($content);
 $induction_field=get_induction_field($content);
-$hypotheses=get_hypotheses($examples, $background, $induction_field);
+$hypotheses=get_hypotheses($examples, $negative_examples, $background, $induction_field);
 echo count($hypotheses)." hypotheses:\n";
 print_3dr($hypotheses);
 
@@ -24,17 +25,46 @@ function union($theory1, $theory2) {
 }
 
 #Each hypothesis is a cnf formula.
-function get_hypotheses($examples, $background, $induction_field) {
+function get_hypotheses($examples, $negative_examples, $background, $induction_field) {
     $subsumer=get_hypotheses_subsumer($examples, $background, $induction_field);
     //Need to check the consistency and explanation conditions?
     $hypotheses=antisubsumed_formulas($subsumer);
     $consistent_hypotheses=array();
     foreach($hypotheses as $hypothesis) {
-        if(is_consistent(union($background, $hypothesis))) {
+        if(!entails_negative_examples($background, $hypothesis, $negative_examples) && is_consistent(union($background, $hypothesis))) {
             array_push($consistent_hypotheses, $hypothesis);
         }
     }
     return $consistent_hypotheses;
+}
+
+#Negative examples are in the dnf form, not cnf.
+function entails_negative_examples($background, $hypothesis, $negative_examples) {
+    foreach($negative_examples as $negative_example) {
+        if(entails_clause(union($background, $hypothesis),$negative_example))
+            return true;
+    }
+    return false;
+}
+
+#TODO use system Progol, Clingo, Otter or other theorem prover, otherwise I would need to implement all the algorithms from the scratch myself.
+#If I cannot find something quickly, implement it myself. Why not? It is just a binary resolution with mgu.
+function entails_clause($cnf, $clause) {
+    #print_2dr1($cnf); print_r1($clause); echo "*****\n";    
+    return false;
+}
+
+function prolog_from_cnf($cnf) {
+    $prolog="";
+    foreach($cnf as $clause) {
+        $prolog.=prolog_from_clause($clause)."\n";
+    }
+    return $prolog;
+}
+
+function prolog_from_clause($clause) {
+    $prolog="";
+        
 }
 
 #TODO
