@@ -153,7 +153,6 @@ function prune_duplicate_literals($clause) {
     return array_values($clause);
 }
 
-#TODO add a support for the predicate case.
 function antisubsumed_formulas($subsumer) {
     $formulas=antisubsumed_formulas_from_dropping($subsumer);
     $formulas2=array();
@@ -165,9 +164,8 @@ function antisubsumed_formulas($subsumer) {
 
 function antiinstantiate($formula, $terms) {
     $terms=array_values($terms);
-    foreach($terms as $key=>$term) {
-        $formula=replace_term($formula, $term, "X$key");
-    }
+    foreach($terms as $key=>$term)
+        $formula=replace_term($formula, $term, "X_$key");
     return $formula;
 }
 
@@ -183,13 +181,11 @@ function replace_term($cnf, $term, $replacement) {
 
 function replace_literal_term($literal, $term, $replacement) {
     $args=array_values(get_arguments($literal));
-    if(count($args)==0) {
+    if(count($args)==0)
         return $literal;
-    }
     $new_literal=get_predicate($literal)."(".($args[0]==$term?$replacement:$args[0]);
-    for($i=1;$i<count($args);$i++) {
-        $new_literal.=",".($args[$i]==$term?$replacement:$args[$i]);
-    }
+    for($i=1;$i<count($args);$i++)
+        $new_literal.=ARGUMENT_SEPARATOR.($args[$i]==$term?$replacement:$args[$i]);
     $new_literal.=")";
     return $new_literal;
 }
@@ -205,13 +201,10 @@ function antisubsumed_formulas_from_antiinstantiation($formula) {
 }
 
 function array_power_set($array) {
-    // initialize by adding the empty set
     $results = array(array( ));
-
     foreach ($array as $element)
         foreach ($results as $combination)
             array_push($results, array_merge(array($element), $combination));
-
     return $results;
 }
 
