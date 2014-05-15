@@ -157,16 +157,62 @@ function antisubsumed_formulas($subsumer) {
     $formulas=antisubsumed_formulas_from_dropping($subsumer);
     $formulas2=array();
     foreach($formulas as $formula) {    
-        $formulas2=array_merge($formulas2,antisubsumed_formulas_from_anti_instantiation($formula));
+        $formulas2=array_merge($formulas2,antisubsumed_formulas_from_antiinstantiation($formula));
     }
     //array_push($formulas, $subsumer);
     return $formulas2;
 }
 
-#TODO
-function antisubsumed_formulas_from_anti_instantiation($formula) {
-    $antisubsumed_formulas=array($formula);        
+function antiinstantiate($formula, $terms) {
+    $terms=array_values($terms);
+    foreach($terms as $key=>$term) {
+        $formula=replace_term($formula, $term, "X$key");
+    }
+    return $formula;
+}
+
+function replace_term($cnf, $term, $replacement) {
+    foreach($cnf as $clause_key=>$clause) {
+        foreach($clause as $literal_key=>$literal) {
+            $clause[$literal_key]=replace_literal_term($literal, $term, $replacement);
+        }
+        $cnf[$clause_key]=$clause;
+    }
+    return $cnf;
+}
+
+function replace_literal_term($literal, $term, $replacement) {
+    $args=array_values(get_arguments($literal));
+    if(count($args)==0) {
+        return $literal;
+    }
+    $new_literal=get_predicate($literal)."(".($args[0]==$term?$replacement:$args[0]);
+    for($i=1;$i<count($args);$i++) {
+        $new_literal.=",".($args[$i]==$term?$replacement:$args[$i]);
+    }
+    $new_literal.=")";
+    return $new_literal;
+}
+
+function antisubsumed_formulas_from_antiinstantiation($formula) {
+    $antisubsumed_formulas=array($formula);
+    $all_terms=get_terms_from_cnf($formula);
+    $terms_combinations=array_power_set($all_terms);
+    foreach($terms_combinations as $terms) {
+        array_push($antisubsumed_formulas, antiinstantiate($formula, $terms));
+    }
     return $antisubsumed_formulas;
+}
+
+function array_power_set($array) {
+    // initialize by adding the empty set
+    $results = array(array( ));
+
+    foreach ($array as $element)
+        foreach ($results as $combination)
+            array_push($results, array_merge(array($element), $combination));
+
+    return $results;
 }
 
 function get_terms_from_cnf($cnf) {
@@ -204,8 +250,12 @@ function rightmost_pos($string, $char) {
     return -1;    
 }
 
-#TODO make it work with the function symbols.
-function get_terms_from_literal($literal) {
+function get_predicate($literal) {
+    $lbracket=leftmost_pos($literal,"(");
+    return $lbracket==-1 ? $literal : substr($literal,0,$lbracket);
+}
+
+function get_arguments($literal) {
     $lbracket=leftmost_pos($literal,"(");
     $rbracket=rightmost_pos($literal,")");
     if($lbracket==-1 || $rbracket==-1 || $lbracket>$rbracket) {
@@ -216,7 +266,12 @@ function get_terms_from_literal($literal) {
     foreach($terms as $key=>$term) {
         $terms[$key]=trim($term);
     }
-    return array_unique($terms);
+    return $terms;
+}
+
+#TODO make it work with the function symbols.
+function get_terms_from_literal($literal) {
+    return array_unique(get_arguments($literal));
 }
 
 #Constructs formulas by dropping from the initial $formula.
