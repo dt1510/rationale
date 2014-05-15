@@ -11,7 +11,7 @@ echo "Rationale, Inductive Logic Programming system\n";
 $learning_problem_file=$argv[1];
 $content=file_get_contents($learning_problem_file);
 $background=get_background_knowledge_formulas($content);
-$examples=get_example_formulas($content);
+$examples=get_examples_formulas($content);
 $induction_field=get_induction_field($content);
 $hypotheses=get_hypotheses($examples, $background, $induction_field);
 echo count($hypotheses)." hypotheses:\n";
@@ -45,7 +45,7 @@ function get_hypotheses_subsumer($examples, $background, $induction_field) {
     $bridge=get_bridge_formulas($background, $examples);
     $tautologies=generate_tautologies($induction_field);
     echo "Tautologies ";print_2dr1($tautologies);
-    echo "Bridge theory ";print_2dr1($bridge);    
+    echo "Most general bridge theory ";print_2dr1($bridge);    
     $subsumer=prune_duplicate_theory_literals(remove_tautologies(remove_properly_subsumed(complement(union($bridge,$tautologies)))));
     echo "Most specific hypothesis ";print_2dr1($subsumer);
     return $subsumer;
@@ -302,9 +302,12 @@ function get_background_knowledge_formulas($content) {
     return get_formulas_between_lines($content, "%Background knowledge", "%Examples");
 }
 
-function get_example_formulas($content) {
+function get_examples_formulas($content) {
+    return get_formulas_between_lines($content, "%Examples", "%Negative examples");
+}
 
-    return get_formulas_between_lines($content, "%Examples", "%EOF");
+function get_negative_examples_formulas($content) {
+    return get_formulas_between_lines($content, "%Negative examples", "%EOF");
 }
 
 function extract_clause($clause_string) {
