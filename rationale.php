@@ -6,6 +6,8 @@
 /******************************************************************************/
 #Theories and produced hypotheses are in cnf, e.g. array(array("a","b"),array("c","-d")).
 
+DEFINE("ARGUMENT_SEPARATOR", ";");
+
 echo "Rationale, Inductive Logic Programming system\n";
 
 $learning_problem_file=$argv[1];
@@ -210,7 +212,7 @@ function get_terms_from_literal($literal) {
         return array();
     }
     $arg_body=substr($literal,$lbracket+1,$rbracket-$lbracket-1);
-    $terms=explode(",",$arg_body);
+    $terms=explode(ARGUMENT_SEPARATOR,$arg_body);
     foreach($terms as $key=>$term) {
         $terms[$key]=trim($term);
     }
