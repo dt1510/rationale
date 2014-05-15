@@ -153,8 +153,68 @@ function prune_duplicate_literals($clause) {
 #TODO add a support for the predicate case.
 function antisubsumed_formulas($subsumer) {
     $formulas=antisubsumed_formulas_from_dropping($subsumer);
+    $formulas2=array();
+    foreach($formulas as $formula) {    
+        $formulas2=array_merge($formulas2,antisubsumed_formulas_from_anti_instantiation($formula));
+    }
     //array_push($formulas, $subsumer);
-    return $formulas;
+    return $formulas2;
+}
+
+#TODO
+function antisubsumed_formulas_from_anti_instantiation($formula) {
+    $antisubsumed_formulas=array($formula);        
+    return $antisubsumed_formulas;
+}
+
+function get_terms_from_cnf($cnf) {
+    $terms=array();
+    foreach($cnf as $clause) {
+        $terms=array_merge($terms, get_terms_from_clause($clause));
+    }
+    return array_unique($terms);
+}
+
+function get_terms_from_clause($clause) {
+    $terms=array();
+    foreach($clause as $literal) {
+        $terms=array_merge($terms, get_terms_from_literal($literal));
+    }
+    return array_unique($terms);
+}
+
+#Returns the position of the leftmost occurance of $char in $string, or -1 if $char not in $string.
+function leftmost_pos($string, $char) {
+    for($i=0; $i<strlen($string); $i++) {
+        if($string[$i]==$char) {
+            return $i;
+        }
+    }
+    return -1;
+}
+
+function rightmost_pos($string, $char) {
+    for($i=strlen($string)-1; $i>=0; $i--) {
+        if($string[$i]==$char) {
+            return $i;
+        }
+    }
+    return -1;    
+}
+
+#TODO make it work with the function symbols.
+function get_terms_from_literal($literal) {
+    $lbracket=leftmost_pos($literal,"(");
+    $rbracket=rightmost_pos($literal,")");
+    if($lbracket==-1 || $rbracket==-1 || $lbracket>$rbracket) {
+        return array();
+    }
+    $arg_body=substr($literal,$lbracket+1,$rbracket-$lbracket-1);
+    $terms=explode(",",$arg_body);
+    foreach($terms as $key=>$term) {
+        $terms[$key]=trim($term);
+    }
+    return array_unique($terms);
 }
 
 #Constructs formulas by dropping from the initial $formula.
