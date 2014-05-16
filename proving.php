@@ -99,9 +99,7 @@ class Literal {
     public function replace_var($var, $replacement) {               
         foreach($this->arguments as $key=>$arg) {
             if($arg==$var) {
-                //echo "<<<".count($this->arguments);
                 $this->arguments[$key]=$replacement;
-                //echo ",".count($this->arguments).">>>";
             }
         }
     }
@@ -145,9 +143,6 @@ class Literal {
 }
 
 $l1=new Literal("p(X0; X1; a; X3)");
-#echo $l1->to_string()."\n";
-#$l1->replace_var("X0","XXX");
-#$l1->replace_var("a","X2");
 $l2=new Literal("p(X0; X1; a; X5)");
 echo $l1->to_string()."\n";
 echo $l2->to_string()."\n";
