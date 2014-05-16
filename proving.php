@@ -124,15 +124,39 @@ function is_empty_clause($clause) {
     return false;
 }
 
+#TODO
+#Returns the mgu if the clauses can be resolved.
+function resolvement_mgu($literal, $literal2) {
+    //return $literal.
+    return false;
+}
+
+#TODO
+#Applies the substitution $substitution to the $literal.
+function substituted_literal($literal, $substitution) {
+    return false;
+}
+
+#TODO
 #A clause here is a set of the Literal objects.
 function get_resolvements($clause, $clause2) {
-    foreach($clause as $literal) {
-        foreach($clause2 as $literal2) {
-            
-        }
+    $resolvements=array();
+    foreach($clause as $key=>$literal) {
+        foreach($clause2 as $key2=>$literal2) {
+            $theta=resolvement_mgu($literal,$literal2);
+            if($theta) {
+                $clause_copy=$clause;
+                $clause2_copy=$clause2;
+                unset($clause_copy[$key]);
+                unset($clause2_copy[$key2]);
+                $resolvement=array_merge($clause_copy, $clause2_copy);
+                array_push($resolvement, substituted_literal($literal, $theta));
+                array_push($resolvements, $resolvement);
+            }
+        }        
     }
     
-    return array();
+    return $resolvements;
 }
 
 ?>
