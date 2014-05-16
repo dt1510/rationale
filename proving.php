@@ -63,14 +63,13 @@ class Literal {
     public $predicate;
     public function __construct($literal_string) {
         $literal_string=extract_literal($literal_string);
-        $arguments=array();
-        $arguments=get_arguments($literal_string);
-        $predicate=get_predicate($literal_string);
-        $negative=is_negative($literal_string);         
+        $this->arguments=get_arguments($literal_string);
+        $this->predicate=get_predicate($literal_string);
+        $this->negative=is_negative($literal_string);         
     }
     
     public function is_negative() {
-        return $negative;
+        return $this->negative;
     }
 }
 
@@ -121,7 +120,7 @@ function finds_refutation($clauses) {
 
 #TODO
 function is_empty_clause($clause) {
-    return false;
+    return count($clause)==0;
 }
 
 #TODO

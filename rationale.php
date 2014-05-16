@@ -6,8 +6,8 @@
 /******************************************************************************/
 #Theories and produced hypotheses are in cnf, e.g. array(array("a","b"),array("c","-d")).
 
-include_once "proving.php";
 DEFINE("ARGUMENT_SEPARATOR", ";");
+include_once "proving.php";
 
 echo "Rationale, Inductive Logic Programming system\n";
 
