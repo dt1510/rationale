@@ -19,9 +19,19 @@ function rightmost_pos($string, $char) {
     return -1;    
 }
 
-function get_predicate($literal) {
+#Returns a predicate symbol with the negation if present.
+function get_predicate_with_sign($literal) {
     $lbracket=leftmost_pos($literal,"(");
     return $lbracket==-1 ? $literal : substr($literal,0,$lbracket);
+}
+
+function get_predicate($literal) {
+    $lbracket=leftmost_pos($literal,"(");
+    return $lbracket==-1 ? $literal : substr($literal,is_negative($literal),$lbracket);
+}
+
+function is_negative($literal) {
+    return $literal[0]=="-";
 }
 
 function get_arguments($literal) {
@@ -48,12 +58,75 @@ function extract_literal($literal_string) {
 }
 
 class Literal {
-    public $negated=false;
+    public $negative=false;
     public $arguments=array();
     public $predicate;
     public function __construct($literal_string) {
-        
+        $literal_string=extract_literal($literal_string);
+        $arguments=array();
+        $arguments=get_arguments($literal_string);
+        $predicate=get_predicate($literal_string);
+        $negative=is_negative($literal_string);         
     }
+    
+    public function is_negative() {
+        return $negative;
+    }
+}
+
+#Converts an array of the clauses of the literal strings to an array of clauses of Literal objects.
+function cnf_to_object_cnf($cnf) {
+    $object_cnf=array();
+    foreach($cnf as $clause) {
+        $object_clause=array();
+        foreach($clause as $literal_string) {
+            array_push($object_clause, new Literal($literal_string));
+        }
+        array_push($object_cnf, $object_clause);
+    }
+    return $object_cnf;
+}
+
+function is_consistent($cnf) {
+    return !finds_refutation(cnf_to_object_cnf($cnf));
+}
+
+#Returns true iff it can find an empty clause by the resolution from the clauses.
+#A clause here is an array of Literal objects, not literal_strings.
+function finds_refutation($clauses) {
+    #Performs the satured search and the binary resolution.
+    $level=0;
+    $clause_levels=array();
+    $clause_levels[0]=$clauses;
+    while(count($clause_levels[$level])>0) {
+        $next_level=count($clause_levels);
+        $clause_levels[$next_level]=array();
+        #Resolve all the clauses of the current level with the clauses in the other levels except the new added level $clause_levels[$next_level].
+        foreach($clause_levels[$level] as $clause) {
+            for($i=0; $i<=$level; $i++) {
+                foreach($clause_levels[$i] as $clause2) {
+                    $resolvements=get_resolvements($clause, $clause2);
+                    foreach($resolvements as $clause3) {
+                        if(is_empty_clause($clause3))
+                            return true;
+                    }
+                    $clause_levels[$next_level]=array_merge($clause_levels[$next_level], $resolvements);
+                }
+            }
+        }
+        $level=$next_level;
+    }
+    return false;
+}
+
+#TODO
+function is_empty_clause($clause) {
+    return false;
+}
+
+#TODO
+function get_resolvements($clause, $clause2) {
+    return array();
 }
 
 ?>

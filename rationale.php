@@ -68,10 +68,10 @@ function prolog_from_clause($clause) {
         
 }
 
-#TODO
-function is_consistent($theory) {
-    return true;    
-}
+##TODO
+#function is_consistent($theory) {
+#    return true;    
+#}
 
 //Produces the most specific hypothesis.
 function get_hypotheses_subsumer($examples, $background, $induction_field) {
@@ -214,7 +214,7 @@ function replace_literal_term($literal, $term, $replacement) {
     $args=array_values(get_arguments($literal));
     if(count($args)==0)
         return $literal;
-    $new_literal=get_predicate($literal)."(".($args[0]==$term?$replacement:$args[0]);
+    $new_literal=get_predicate_with_sign($literal)."(".($args[0]==$term?$replacement:$args[0]);
     for($i=1;$i<count($args);$i++)
         $new_literal.=ARGUMENT_SEPARATOR.($args[$i]==$term?$replacement:$args[$i]);
     $new_literal.=")";
