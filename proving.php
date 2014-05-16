@@ -136,6 +136,9 @@ class Literal {
     }
 }
 
+$l1=new Literal("p(a)");
+$l2=new Literal("r(a)");
+
 #Generates a variable name that does not appear on the list.
 function generate_different_var($vars) {
     $index=0;
