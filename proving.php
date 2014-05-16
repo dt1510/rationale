@@ -92,13 +92,39 @@ class Literal {
     public function get_arguments() {
         return $this->arguments;
     }
-    
+
     #TODO
-    public function standarize_apart($literal) {                
-        $common_vars=array_intersect($this->get_variables(), $literal->get_variables());
+    public function replace_var($var, $replacement) {
+        
+    }
+
+    public function standarize_apart($literal) {      
+        $vars=$this->get_variables();
+        $vars2=$literal->get_variables();
+        $all_vars=array_values(array_unique(array_merge($vars,$vars2)));
+        $common_vars=array_intersect($vars,$vars);
         $new_literal=clone $this;
-        ##$new_literal=
-        return $this;
+        foreach($common_vars as $var) {
+            $different_var=generate_different_var($all_vars);
+            $new_literal->replace_var($var, $different_var);
+            array_push($all_vars, $different_var);
+        }
+        return $new_literal;
+    }
+    
+    public function to_string() {
+        $string=($this->is_negative()?"-":"").($this->predicate);
+        if($this->get_predicate_arity()>0) {
+        $string."(";
+        $has_args=false; 
+        foreach($this->get_variables() as $var) {
+            $string.=($has_args?ARGUMENT_SEPARATOR:"");
+            $string.=$var;
+            $has_args=true;
+        }
+        $string.=")";
+        }
+        return $string;
     }
     
     public function get_variables() {
