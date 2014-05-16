@@ -16,7 +16,7 @@ function rightmost_pos($string, $char) {
             return $i;
         }
     }
-    return -1;    
+    return -1;
 }
 
 #Returns a predicate symbol with the negation if present.
@@ -93,8 +93,6 @@ class Literal {
         return $this->arguments;
     }
 
-    #FIXME
-    #TODO
     #TODO make this work with the function symbols
     public function replace_var($var, $replacement) {               
         foreach($this->arguments as $key=>$arg) {
@@ -142,13 +140,13 @@ class Literal {
     }
 }
 
-$l1=new Literal("p(X0; X1; a; X3)");
-$l2=new Literal("p(X0; X1; a; X5)");
-echo $l1->to_string()."\n";
-echo $l2->to_string()."\n";
-$l3=$l1->standarize_apart($l2);
-echo $l3->to_string()."\n";
-echo "-------------\n";
+#$l1=new Literal("p(X0; X1; a; X3)");
+#$l2=new Literal("q(X0; X1; a; X5; X6)");
+#echo $l1->to_string()."\n";
+#echo $l2->to_string()."\n";
+#$l3=$l1->standarize_apart($l2);
+#echo $l3->to_string()."\n";
+#echo "-------------\n";
 
 #Generates a variable name that does not appear on the list.
 function generate_different_var($vars) {
@@ -212,16 +210,72 @@ function is_empty_clause($clause) {
     return count($clause)==0;
 }
 
-#TODO
-#TODO function symbols support.
-function mgu_terms($terms, $terms2) {
-    return false;
+function is_var($arg) {
+    return strlen($arg)>0 && ctype_upper($arg[0]);
 }
+
+function is_term($arg) {
+    return strlen($arg)>0 && !ctype_upper($arg[1]);
+}
+
+#TODO case with all args vars
+#TODO function symbols support.
+#Finds the mgu for the args with the same indices in the arrays.
+function mgu_args($args, $args2) {
+    $mgu=array();
+    $args=array_values($args);
+    $args2=array_values($args2);
+    $size=max(count($args),count($args2));
+    for($i=0; $i<$size; $i++) {
+        if(is_var($args[$i]) && is_var($args2[$i])) {
+            array_push($mgu, array($args[$i],$args2[$i]));
+            foreach($args as $key1=>$arg1) {
+                $args[$key1]=replace_var($args[$key1], $args[$i], $args2[$i]);
+            }
+            foreach($args2 as $key2=>$arg2) {
+                $args2[$key2]=replace_var($args2[$key2], $args[$i], $args2[$i]);
+            }
+        } else if(is_var($args[$i]) && is_term($args2[$i])) {
+            array_push($mgu, array($args[$i],$args2[$i]));
+            foreach($args as $key1=>$arg1) {
+                $args[$key1]=replace_var($args[$key1], $args[$i], $args2[$i]);
+            }
+            foreach($args2 as $key2=>$arg2) {
+                $args2[$key2]=replace_var($args2[$key2], $args[$i], $args2[$i]);
+            }            
+        } else if(is_term($args[$i]) && is_var($args2[$i])) {
+            array_push($mgu, array($args2[$i],$args[$i]));
+            foreach($args as $key1=>$arg1) {
+                $args[$key1]=replace_var($args[$key1], $args2[$i], $args[$i]);
+            }
+            foreach($args2 as $key2=>$arg2) {
+                $args2[$key2]=replace_var($args2[$key2], $args2[$i], $args[$i]);
+            }            
+        } else if(is_term($args[$i]) && is_term($args2[$i])) {
+            if($args[$i]!=$args[$i])
+                return false;
+        }
+    }
+    return $mgu;
+}
+
+#Replaces a variable in an argument.
+#TODO function symbol support.
+function replace_var($arg, $var, $replacement) {
+    return ($arg==$var)?$replacement:$arg;
+}
+
+$args=array("X");
+$args2=array("a");
+
+echo mgu_args($args, $args2)."\n---------\n";
 
 #TODO
 #TODO make this work with the function symbols.
 #Returns the mgu if the clauses can be resolved.
 function resolvement_mgu($literal, $literal2) {
+    #FIXME delete the line below
+    return false;
     if($literal->get_predicate()!=$literal2->get_predicate())
         return false;
     $standarized_apart_literal=$literal2->standarize_apart($literal);
