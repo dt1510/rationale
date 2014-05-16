@@ -124,8 +124,14 @@ function is_empty_clause($clause) {
     return false;
 }
 
-#TODO
+#A clause here is a set of the Literal objects.
 function get_resolvements($clause, $clause2) {
+    foreach($clause as $literal) {
+        foreach($clause2 as $literal2) {
+            
+        }
+    }
+    
     return array();
 }
 
