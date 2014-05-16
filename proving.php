@@ -96,7 +96,7 @@ class Literal {
     #FIXME
     #TODO
     #TODO make this work with the function symbols
-    public function replace_var($var, $replacement) {        
+    public function replace_var($var, $replacement) {               
         foreach($this->arguments as $key=>$arg) {
             if($arg==$var) {
                 //echo "<<<".count($this->arguments);
@@ -144,13 +144,16 @@ class Literal {
     }
 }
 
-$l1=new Literal("p(X0, X1, a, X3)");
-#$l2=new Literal("p(X0, X1, a, X3)");
+$l1=new Literal("p(X0; X1; a; X3)");
 #echo $l1->to_string()."\n";
-#echo $l2->to_string()."\n";
-#$l3=$l1->standarize_apart($l2);
-#echo $l3->to_string()."\n";
-#echo "-------------\n";
+#$l1->replace_var("X0","XXX");
+#$l1->replace_var("a","X2");
+$l2=new Literal("p(X0; X1; a; X5)");
+echo $l1->to_string()."\n";
+echo $l2->to_string()."\n";
+$l3=$l1->standarize_apart($l2);
+echo $l3->to_string()."\n";
+echo "-------------\n";
 
 #Generates a variable name that does not appear on the list.
 function generate_different_var($vars) {

@@ -51,7 +51,7 @@ function entails_negative_examples($background, $hypothesis, $negative_examples)
 #TODO use system Progol, Clingo, Otter or other theorem prover, otherwise I would need to implement all the algorithms from the scratch myself.
 #If I cannot find something quickly, implement it myself. Why not? It is just a binary resolution with mgu.
 function entails_clause($cnf, $clause) {
-    #print_2dr1($cnf); print_r1($clause); echo "*****\n";    
+    #print_2dr1($cnf); print_r1($clause); echo "*****\n";
     return false;
 }
 
