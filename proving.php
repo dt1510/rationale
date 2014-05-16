@@ -57,6 +57,15 @@ function extract_literal($literal_string) {
     return trim($literal_string, " \t\n\r\0\x0B.");
 }
 
+#TODO make this work with the function symbols
+function get_variables($term) {
+    $variables=array();
+    if(ctype_upper($term[0])) {
+        array_push($variables, $term);
+    }
+    return $variables;
+}
+
 class Literal {
     public $negative=false;
     public $arguments=array();
@@ -70,6 +79,47 @@ class Literal {
     
     public function is_negative() {
         return $this->negative;
+    }
+    
+    public function get_predicate() {
+        return $this->predicate;
+    }
+    
+    public function get_predicate_arity() {
+        return count($this->arguments);
+    }
+    
+    public function get_arguments() {
+        return $this->arguments;
+    }
+    
+    #TODO
+    public function standarize_apart($literal) {                
+        $common_vars=array_intersect($this->get_variables(), $literal->get_variables());
+        $new_literal=clone $this;
+        ##$new_literal=
+        return $this;
+    }
+    
+    public function get_variables() {
+        $variables=array();
+        foreach($this->arguments as $argument) {
+            $variables=array_merge($variables, get_variables($argument));
+        }
+        return array_values(array_unique($variables));
+    }
+}
+
+#Generates a variable name that does not appear on the list.
+function generate_different_var($vars) {
+    $index=0;
+    while(true) {
+        $index++;
+        foreach($vars as $var) {
+            if($var=="X$index")
+                continue 2;
+        }
+        return "X$index";
     }
 }
 
@@ -118,16 +168,24 @@ function finds_refutation($clauses) {
     return false;
 }
 
-#TODO
 function is_empty_clause($clause) {
     return count($clause)==0;
 }
 
 #TODO
+#TODO function symbols support.
+function mgu_terms($terms, $terms2) {
+    return false;
+}
+
+#TODO
+#TODO make this work with the function symbols.
 #Returns the mgu if the clauses can be resolved.
 function resolvement_mgu($literal, $literal2) {
-    //return $literal.
-    return false;
+    if($literal->get_predicate()!=$literal2->get_predicate())
+        return false;
+    $standarized_apart_literal=$literal2->standarize_apart($literal);
+    return mgu_terms($literal->get_arguments(), $standarized_apart_literal->get_arguments());
 }
 
 #TODO
