@@ -93,9 +93,17 @@ class Literal {
         return $this->arguments;
     }
 
+    #FIXME
     #TODO
-    public function replace_var($var, $replacement) {
-        
+    #TODO make this work with the function symbols
+    public function replace_var($var, $replacement) {        
+        foreach($this->arguments as $key=>$arg) {
+            if($arg==$var) {
+                //echo "<<<".count($this->arguments);
+                $this->arguments[$key]=$replacement;
+                //echo ",".count($this->arguments).">>>";
+            }
+        }
     }
 
     public function standarize_apart($literal) {      
@@ -115,11 +123,11 @@ class Literal {
     public function to_string() {
         $string=($this->is_negative()?"-":"").($this->predicate);
         if($this->get_predicate_arity()>0) {
-        $string."(";
+        $string.="(";
         $has_args=false; 
-        foreach($this->get_variables() as $var) {
+        foreach($this->get_arguments() as $arg) {
             $string.=($has_args?ARGUMENT_SEPARATOR:"");
-            $string.=$var;
+            $string.=$arg;
             $has_args=true;
         }
         $string.=")";
@@ -136,8 +144,13 @@ class Literal {
     }
 }
 
-$l1=new Literal("p(a)");
-$l2=new Literal("r(a)");
+$l1=new Literal("p(X0, X1, a, X3)");
+#$l2=new Literal("p(X0, X1, a, X3)");
+#echo $l1->to_string()."\n";
+#echo $l2->to_string()."\n";
+#$l3=$l1->standarize_apart($l2);
+#echo $l3->to_string()."\n";
+#echo "-------------\n";
 
 #Generates a variable name that does not appear on the list.
 function generate_different_var($vars) {
