@@ -346,9 +346,12 @@ function clause_copy($clause) {
 #$mgu=resolvement_mgu($l1,$l2);
 #print_r1k($mgu);
 
-$clause=array(new Literal("q(X;a)"), new Literal("s(X;X2)"));
-$clause2=array(new Literal("-q(a;Y)"), new Literal("r(Y;X2)"));
-get_resolvements($clause,$clause2);
+#$clause=array(new Literal("q(X;a)"), new Literal("-q(X;X2)"));
+#$clause2=array(new Literal("-q(a;Y)"), new Literal("q(Y;X2)"));
+#$resolvements=get_resolvements($clause,$clause2);
+#foreach($resolvements as $clause) {
+#    print_clause($clause);
+#}
 
 #TODO
 #A clause here is a set of the Literal objects.
@@ -365,8 +368,7 @@ function get_resolvements($clause, $clause2) {
                 unset($clause_copy[$key]);
                 unset($clause2_copy[$key2]);                
                 $resolvement=clause_apply_substitution(array_merge($clause_copy, $clause2_copy),$theta);
-                print_clause_nonl($clause);print_clause_nonl($clause2);echo " -> ";print_clause_nonl($resolvement);
-                echo "\n";
+                #print_clause_nonl($clause);print_clause_nonl($clause2);echo " -> ";print_clause_nonl($resolvement);echo "\n";
                 array_push($resolvements, $resolvement);
             }
         }        
