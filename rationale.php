@@ -7,6 +7,7 @@
 #Theories and produced hypotheses are in cnf, e.g. array(array("a","b"),array("c","-d")).
 
 DEFINE("ARGUMENT_SEPARATOR", ";");
+include_once "print.php";
 include_once "proving.php";
 
 echo "Rationale, Inductive Logic Programming system\n";
@@ -465,41 +466,6 @@ function negation($literal) {
         return substr($literal,1);      
     } else {
         return "-".$literal;
-    }
-}
-
-function print_r1nonl($array) {
-    if(!isset($array)) {
-        echo "unset";
-        return;
-    }
-    echo "[";
-    foreach($array as $value) {
-        echo $value." ";
-    }
-    echo "]";
-}
-#Prints the array on a single line.
-function print_r1($array) {
-    print_r1nonl($array);
-    echo "\n";
-}
-#Prints a 2d array on a single line.
-function print_2dr1($array2d) {
-    echo "[";
-    foreach($array2d as $array1d) {
-        echo "[";
-        foreach($array1d as $value) {
-            echo $value." ";
-        }
-        echo "]";
-    }
-    echo "]";
-    echo "\n";
-}
-function print_3dr($array3d) {
-    foreach($array3d as $array2d) {
-        print_2dr1($array2d);
     }
 }
 ?>
