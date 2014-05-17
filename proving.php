@@ -68,7 +68,11 @@ function get_vars($arg) {
 
 
 function get_clause_vars($clause) {
-    
+    $vars=array();
+    foreach($clause as $literal) {
+        $vars=array_merge($vars,$literal->get_vars());
+    }
+    return $vars;
 }
 
 
