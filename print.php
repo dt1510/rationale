@@ -10,11 +10,30 @@ function print_r1nonl($array) {
     }
     echo "]";
 }
-#Prints the array on a single line.
+#Prints an array on a single line.
 function print_r1($array) {
     print_r1nonl($array);
     echo "\n";
 }
+
+#Prints an array on a single line with the keys.
+function print_r1knonl($array) {
+    if(!isset($array)) {
+        echo "unset";
+        return;
+    }
+    echo "[";
+    foreach($array as $key=>$value) {
+        echo $key."=>".$value." ";
+    }
+    echo "]";
+}
+
+function print_r1k($array) {
+    print_r1knonl($array);
+    echo "\n";
+}
+
 #Prints a 2d array on a single line.
 function print_2dr1($array2d) {
 #    if($array2d==false) {

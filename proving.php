@@ -141,7 +141,7 @@ class Literal {
 }
 
 #$l1=new Literal("p(X0; X1; a; X3)");
-#$l2=new Literal("q(X0; X1; a; X5; X6)");
+#$l2=new Literal("p(X0; X1; a; X5)");
 #echo $l1->to_string()."\n";
 #echo $l2->to_string()."\n";
 #$l3=$l1->standarize_apart($l2);
@@ -242,7 +242,7 @@ function mgu_args($args, $args2) {
             continue;            
         }
 
-        array_push($mgu, array($var,$replacement));
+        $mgu[$var]=$replacement;
         foreach($args as $key=>$arg)
             $args[$key]=replace_var($args[$key], $var, $replacement);
         foreach($args2 as $key2=>$arg2)
@@ -251,17 +251,9 @@ function mgu_args($args, $args2) {
     return $mgu;
 }
 
-#$arr=array("t0_","t1_","t2_");
-#print_r1($arr);
-#for($i=0; $i<count($arr); $i++) {
-#    $a=$arr[$i];
-#    echo "$a\n";
-#    foreach($arr as $key=>$a2) {
-#        $arr[$key]=$a.$a2;
-#    }
-#    echo "$arr[$i].\n";
-#}
-#print_r1($arr);
+$args=array("X1","X2","a");
+$args2=array("Y1","a","Y2");
+print_r1k(mgu_args($args,$args2));
 
 #Replaces a variable in an argument.
 #TODO function symbol support.
@@ -269,28 +261,20 @@ function replace_var($arg, $var, $replacement) {
     return ($arg==$var)?$replacement:$arg;
 }
 
-$args=array("X","Y");
-$args2=array("a","X");
-
-#echo mgu_args($args, $args2)."\n";
-$mgu=mgu_args($args, $args2);
-echo "mgu ";
-//var_dump($mgu);
-//echo "\nmgu ";
-print_2dr1($mgu);
-echo "---------\n";
-
 #TODO
 #TODO make this work with the function symbols.
 #Returns the mgu if the clauses can be resolved.
 function resolvement_mgu($literal, $literal2) {
-    #FIXME delete the line below
-    return false;
     if($literal->get_predicate()!=$literal2->get_predicate())
         return false;
     $standarized_apart_literal=$literal2->standarize_apart($literal);
-    return mgu_terms($literal->get_arguments(), $standarized_apart_literal->get_arguments());
+    return mgu_args($literal->get_arguments(), $standarized_apart_literal->get_arguments());
 }
+
+$l1=new Literal("p(X1;X2;a)");
+$l2=new Literal("p(Y1;a;Y2)");
+$mgu=resolvement_mgu($l1,$l2);
+#var_dump($mgu);
 
 #TODO
 #Applies the substitution $substitution to the $literal.
@@ -304,7 +288,9 @@ function get_resolvements($clause, $clause2) {
     $resolvements=array();
     foreach($clause as $key=>$literal) {
         foreach($clause2 as $key2=>$literal2) {
-            $theta=resolvement_mgu($literal,$literal2);
+            #FIXME uncomment the line below
+            //$theta=resolvement_mgu($literal,$literal2);
+            $theta=array();
             if($theta) {
                 $clause_copy=$clause;
                 $clause2_copy=$clause2;
