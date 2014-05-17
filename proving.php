@@ -26,8 +26,9 @@ function get_predicate_with_sign($literal) {
 }
 
 function get_predicate($literal) {
+    $is_negative=is_negative($literal);
     $lbracket=leftmost_pos($literal,"(");
-    return $lbracket==-1 ? $literal : substr($literal,is_negative($literal),$lbracket);
+    return $lbracket==-1 ? substr($literal,$is_negative) : substr($literal,$is_negative,$lbracket-$is_negative);
 }
 
 function is_negative($literal) {
@@ -82,16 +83,16 @@ function clause_apply_substitution($clause, $theta) {
     return $clause;
 }
 
-$clause=array(new Literal("p(X;X2;a)"), new Literal("q(b;Y;X)"));
-print_clause($clause);
-$theta=array();$theta["X"]="Y2";
-$clause=clause_apply_substitution($clause, $theta);
-print_clause($clause);
+#$clause=array(new Literal("p(X;X2;a)"), new Literal("q(b;Y;X)"));
+#print_clause($clause);
+#$theta=array();$theta["X"]="Y2";$theta["X2"]="c";$theta["Test"]="abraca";
+#$clause=clause_apply_substitution($clause, $theta);
+#print_clause(standarize_apart_clause($clause,array("X","Y")));
 
 #Returns a clause whose variables do not intersect with $vars.
 function standarize_apart_clause($clause, $vars) {
     $clause_vars=get_clause_vars($clause);
-    $theta=standarize_apart_vars($clause);
+    $theta=standarize_apart_vars($clause_vars,$vars);
     return clause_apply_substitution($clause, $theta); 
 }
 
@@ -326,8 +327,10 @@ function replace_var($arg, $var, $replacement) {
 #TODO make this work with the function symbols.
 #Returns the mgu if the clauses can be resolved.
 function resolvement_mgu($literal, $literal2) {
+    echo $literal->get_predicate()." ".$literal2->get_predicate()."\n";
     if($literal->get_predicate()!=$literal2->get_predicate())
         return false;
+        echo "-";
     return mgu_args($literal->get_arguments(), $literal2->get_arguments());
 }
 
@@ -336,23 +339,28 @@ function resolvement_mgu($literal, $literal2) {
 #$mgu=resolvement_mgu($l1,$l2);
 #print_r1k($mgu);
 
+$clause=array(new Literal("p"), new Literal("q"));
+$clause2=array(new Literal("-p"), new Literal("r"));
+get_resolvements($clause,$clause2);
+
 #TODO
 #A clause here is a set of the Literal objects.
 function get_resolvements($clause, $clause2) {
     $resolvements=array();
-    return $resolvements;
-    $vars=get_clause_vars($clause);
-    $clause2=standarize_apart_clause($vars);
+    $vars=get_clause_vars($clause);    
+    $clause2=standarize_apart_clause($clause2, $vars);
     foreach($clause as $key=>$literal) {
-        foreach($clause2 as $key2=>$literal2) {            
+        foreach($clause2 as $key2=>$literal2) {
             $theta=resolvement_mgu($literal,$literal2);
-            $theta=array();
+            var_dump($theta);
             if($theta) {
                 $clause_copy=$clause;
                 $clause2_copy=$clause2;
                 unset($clause_copy[$key]);
                 unset($clause2_copy[$key2]);
                 $resolvement=clause_apply_substitution(array_merge($clause_copy, $clause2_copy),$theta);
+                print_clause_nonl($clause);
+                echo "\n";
                 array_push($resolvements, $resolvement);
             }
         }        

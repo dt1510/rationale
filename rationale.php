@@ -18,8 +18,8 @@ $background=get_background_knowledge_formulas($content);
 $examples=get_examples_formulas($content);
 $negative_examples=get_negative_examples_formulas($content);
 $induction_field=get_induction_field($content);
-$hypotheses=get_hypotheses($examples, $negative_examples, $background, $induction_field);
-echo count($hypotheses)." hypotheses:\n";
+#$hypotheses=get_hypotheses($examples, $negative_examples, $background, $induction_field);
+#echo count($hypotheses)." hypotheses:\n";
 #print_3dr($hypotheses);
 
 function union($theory1, $theory2) {

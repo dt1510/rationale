@@ -62,11 +62,16 @@ function print_3dr($array3d) {
 }
 
 #Prints an array of Literals.
-function print_clause($clause) {
+function print_clause_nonl($clause) {
     echo "[";
     foreach($clause as $literal) {
         echo $literal->to_string()." ";
     }
-    echo "]\n";
+    echo "]";
+}
+
+function print_clause($clause) {
+    print_clause_nonl($clause);
+    echo "\n";
 }
 ?>
