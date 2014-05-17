@@ -35,7 +35,7 @@ function is_negative($literal) {
     return $literal[0]=="-";
 }
 
-function get_arguments($literal) {
+function get_args($literal) {
     $lbracket=leftmost_pos($literal,"(");
     $rbracket=rightmost_pos($literal,")");
     if($lbracket==-1 || $rbracket==-1 || $lbracket>$rbracket) {
@@ -51,7 +51,7 @@ function get_arguments($literal) {
 
 #TODO make it work with the function symbols.
 function get_terms_from_literal($literal) {
-    return array_unique(get_arguments($literal));
+    return array_unique(get_args($literal));
 }
 
 function extract_literal($literal_string) {
@@ -103,7 +103,7 @@ class Literal {
     public $predicate;
     public function __construct($literal_string) {
         $literal_string=extract_literal($literal_string);
-        $this->arguments=get_arguments($literal_string);
+        $this->arguments=get_args($literal_string);
         $this->predicate=get_predicate($literal_string);
         $this->negative=is_negative($literal_string);         
     }
@@ -120,7 +120,7 @@ class Literal {
         return count($this->arguments);
     }
     
-    public function get_arguments() {
+    public function get_args() {
         return $this->arguments;
     }
 
@@ -164,7 +164,7 @@ class Literal {
         if($this->get_predicate_arity()>0) {
         $string.="(";
         $has_args=false; 
-        foreach($this->get_arguments() as $arg) {
+        foreach($this->get_args() as $arg) {
             $string.=($has_args?ARGUMENT_SEPARATOR:"");
             $string.=$arg;
             $has_args=true;
@@ -327,11 +327,10 @@ function replace_var($arg, $var, $replacement) {
 #TODO make this work with the function symbols.
 #Returns the mgu if the clauses can be resolved.
 function resolvement_mgu($literal, $literal2) {
-    echo $literal->get_predicate()." ".$literal2->get_predicate()."\n";
     if($literal->get_predicate()!=$literal2->get_predicate())
         return false;
-        echo "-";
-    return mgu_args($literal->get_arguments(), $literal2->get_arguments());
+    echo $literal->get_args();
+    return mgu_args($literal->get_args(), $literal2->get_args());
 }
 
 #$l1=new Literal("p(X1;X2;a)");
@@ -352,7 +351,7 @@ function get_resolvements($clause, $clause2) {
     foreach($clause as $key=>$literal) {
         foreach($clause2 as $key2=>$literal2) {
             $theta=resolvement_mgu($literal,$literal2);
-            var_dump($theta);
+            #var_dump($theta);
             if($theta) {
                 $clause_copy=$clause;
                 $clause2_copy=$clause2;
