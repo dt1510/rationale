@@ -329,7 +329,6 @@ function replace_var($arg, $var, $replacement) {
 function resolvement_mgu($literal, $literal2) {
     if($literal->get_predicate()!=$literal2->get_predicate())
         return false;
-    echo $literal->get_args();
     return mgu_args($literal->get_args(), $literal2->get_args());
 }
 
@@ -351,14 +350,13 @@ function get_resolvements($clause, $clause2) {
     foreach($clause as $key=>$literal) {
         foreach($clause2 as $key2=>$literal2) {
             $theta=resolvement_mgu($literal,$literal2);
-            #var_dump($theta);
-            if($theta) {
+            if(is_array($theta)) {
                 $clause_copy=$clause;
                 $clause2_copy=$clause2;
                 unset($clause_copy[$key]);
                 unset($clause2_copy[$key2]);
                 $resolvement=clause_apply_substitution(array_merge($clause_copy, $clause2_copy),$theta);
-                print_clause_nonl($clause);
+                print_clause_nonl($clause);print_clause_nonl($clause2);echo " -> ";print_clause_nonl($resolvement);
                 echo "\n";
                 array_push($resolvements, $resolvement);
             }
