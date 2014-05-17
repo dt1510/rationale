@@ -158,8 +158,8 @@ function standarize_apart_vars($vars, $vars2) {
     return $substitution;
 }
 
-$vars=array("X1", "X2", "X3");
-$vars2=array("X1", "Y3", "X3");
+$vars=array("X1", "X2", "X3","X5");
+$vars2=array("X1", "Y3", "X2");
 $theta=standarize_apart_vars($vars, $vars2);
 print_r1k($theta);
 
