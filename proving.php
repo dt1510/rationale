@@ -102,6 +102,11 @@ class Literal {
         }
     }
 
+    #Finds the substitution for the $this Literal to be applied to standarize it apart from the $variables.
+#    public function standarize_apart_substitution($variables) {
+#        
+#    }
+
     public function standarize_apart($literal) {      
         $vars=$this->get_variables();
         $vars2=$literal->get_variables();
@@ -139,6 +144,24 @@ class Literal {
         return array_values(array_unique($variables));
     }
 }
+
+#Returns a substitution to be applied on the $vars to standarize them apart from the variables $var2.
+function standarize_apart_vars($vars, $vars2) {
+    $substitution=array();
+    $all_vars=array_values(array_unique(array_merge($vars,$vars2)));
+    $common_vars=array_intersect($vars,$vars2);
+    foreach($common_vars as $var) {
+        $different_var=generate_different_var($all_vars);
+        $substitution[$var]=$different_var;
+        array_push($all_vars, $different_var);
+    }
+    return $substitution;
+}
+
+$vars=array("X1", "X2", "X3");
+$vars2=array("X1", "Y3", "X3");
+$theta=standarize_apart_vars($vars, $vars2);
+print_r1k($theta);
 
 #$l1=new Literal("p(X0; X1; a; X3)");
 #$l2=new Literal("p(X0; X1; a; X5)");
@@ -268,15 +291,13 @@ function replace_var($arg, $var, $replacement) {
 function resolvement_mgu($literal, $literal2) {
     if($literal->get_predicate()!=$literal2->get_predicate())
         return false;
-    $standarized_apart_literal=$literal2->standarize_apart($literal);
-    echo $standarized_apart_literal->to_string();
-    return mgu_args($literal->get_arguments(), $standarized_apart_literal->get_arguments());
+    return mgu_args($literal->get_arguments(), $literal2->get_arguments());
 }
 
-$l1=new Literal("p(X1;X2;a)");
-$l2=new Literal("p(X2;a;X3)");
-$mgu=resolvement_mgu($l1,$l2);
-print_r1k($mgu);
+#$l1=new Literal("p(X1;X2;a)");
+#$l2=new Literal("p(X2;a;X3)");
+#$mgu=resolvement_mgu($l1,$l2);
+#print_r1k($mgu);
 
 #TODO
 #Applies the substitution $substitution to the $literal.
@@ -290,8 +311,8 @@ function get_resolvements($clause, $clause2) {
     $resolvements=array();
     foreach($clause as $key=>$literal) {
         foreach($clause2 as $key2=>$literal2) {
-            #FIXME uncomment the line below
-            //$theta=resolvement_mgu($literal,$literal2);
+            #$literal2=$literal2->standarize_apart($literal);                     
+            #$theta=resolvement_mgu($literal,$literal2);
             $theta=array();
             if($theta) {
                 $clause_copy=$clause;
