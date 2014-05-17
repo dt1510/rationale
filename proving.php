@@ -328,17 +328,10 @@ function replace_var($arg, $var, $replacement) {
 function resolvement_mgu($literal, $literal2) {
     if($literal->get_predicate()!=$literal2->get_predicate())
         return false;
+    if(!(((bool)$literal->is_negative()) ^ ((bool)$literal2->is_negative())))
+        return false;
     return mgu_args($literal->get_args(), $literal2->get_args());
 }
-
-#$l1=new Literal("p(X1;X2;a)");
-#$l2=new Literal("p(X2;a;X3)");
-#$mgu=resolvement_mgu($l1,$l2);
-#print_r1k($mgu);
-
-$clause=array(new Literal("q(X;Y)"), new Literal("s(X;X)"));
-$clause2=array(new Literal("-q(a;Y)"), new Literal("r"));
-get_resolvements($clause,$clause2);
 
 function clause_copy($clause) {
     $clause_copy=array();
@@ -348,6 +341,15 @@ function clause_copy($clause) {
     return $clause_copy;
 }
 
+#$l1=new Literal("p(X1;X2;a)");
+#$l2=new Literal("p(X2;a;X3)");
+#$mgu=resolvement_mgu($l1,$l2);
+#print_r1k($mgu);
+
+$clause=array(new Literal("q(X;a)"), new Literal("s(X;X2)"));
+$clause2=array(new Literal("-q(a;Y)"), new Literal("r(Y;X2)"));
+get_resolvements($clause,$clause2);
+
 #TODO
 #A clause here is a set of the Literal objects.
 function get_resolvements($clause, $clause2) {
@@ -356,15 +358,13 @@ function get_resolvements($clause, $clause2) {
     $clause2=standarize_apart_clause($clause2, $vars);    
     foreach($clause as $key=>$literal) {
         foreach($clause2 as $key2=>$literal2) {                        
-            $theta=resolvement_mgu($literal,$literal2);            
+            $theta=resolvement_mgu($literal,$literal2);
             if(is_array($theta)) {
                 $clause_copy=clause_copy($clause);
                 $clause2_copy=clause_copy($clause2);
                 unset($clause_copy[$key]);
                 unset($clause2_copy[$key2]);                
-                print_clause($clause);
                 $resolvement=clause_apply_substitution(array_merge($clause_copy, $clause2_copy),$theta);
-                print_clause($clause);
                 print_clause_nonl($clause);print_clause_nonl($clause2);echo " -> ";print_clause_nonl($resolvement);
                 echo "\n";
                 array_push($resolvements, $resolvement);
