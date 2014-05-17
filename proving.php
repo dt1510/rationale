@@ -58,13 +58,19 @@ function extract_literal($literal_string) {
 }
 
 #TODO make this work with the function symbols
-function get_variables($term) {
+function get_vars($arg) {
     $variables=array();
-    if(ctype_upper($term[0])) {
-        array_push($variables, $term);
+    if(ctype_upper($arg[0])) {
+        array_push($variables, $arg);
     }
     return $variables;
 }
+
+
+function get_clause_vars($clause) {
+    
+}
+
 
 class Literal {
     public $negative=false;
@@ -108,8 +114,8 @@ class Literal {
 #    }
 
     public function standarize_apart($literal) {      
-        $vars=$this->get_variables();
-        $vars2=$literal->get_variables();
+        $vars=$this->get_vars();
+        $vars2=$literal->get_vars();
         $all_vars=array_values(array_unique(array_merge($vars,$vars2)));
         $common_vars=array_intersect($vars,$vars2);
         $new_literal=clone $this;
@@ -136,10 +142,10 @@ class Literal {
         return $string;
     }
     
-    public function get_variables() {
+    public function get_vars() {
         $variables=array();
         foreach($this->arguments as $argument) {
-            $variables=array_merge($variables, get_variables($argument));
+            $variables=array_merge($variables, get_vars($argument));
         }
         return array_values(array_unique($variables));
     }
@@ -158,10 +164,10 @@ function standarize_apart_vars($vars, $vars2) {
     return $substitution;
 }
 
-$vars=array("X1", "X2", "X3","X5");
-$vars2=array("X1", "Y3", "X2");
-$theta=standarize_apart_vars($vars, $vars2);
-print_r1k($theta);
+#$vars=array("X1", "X2", "X3","X5");
+#$vars2=array("X1", "Y3", "X2");
+#$theta=standarize_apart_vars($vars, $vars2);
+#print_r1k($theta);
 
 #$l1=new Literal("p(X0; X1; a; X3)");
 #$l2=new Literal("p(X0; X1; a; X5)");
