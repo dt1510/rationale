@@ -96,7 +96,6 @@ function standarize_apart_clause($clause, $vars) {
     return clause_apply_substitution($clause, $theta); 
 }
 
-
 class Literal {
     public $negative=false;
     public $arguments=array();
@@ -337,25 +336,35 @@ function resolvement_mgu($literal, $literal2) {
 #$mgu=resolvement_mgu($l1,$l2);
 #print_r1k($mgu);
 
-$clause=array(new Literal("p"), new Literal("q"));
-$clause2=array(new Literal("-p"), new Literal("r"));
+$clause=array(new Literal("q(X;Y)"), new Literal("s(X;X)"));
+$clause2=array(new Literal("-q(a;Y)"), new Literal("r"));
 get_resolvements($clause,$clause2);
+
+function clause_copy($clause) {
+    $clause_copy=array();
+    foreach($clause as $key=>$literal) {
+        $clause_copy[$key]=clone $literal;
+    }
+    return $clause_copy;
+}
 
 #TODO
 #A clause here is a set of the Literal objects.
 function get_resolvements($clause, $clause2) {
     $resolvements=array();
     $vars=get_clause_vars($clause);    
-    $clause2=standarize_apart_clause($clause2, $vars);
+    $clause2=standarize_apart_clause($clause2, $vars);    
     foreach($clause as $key=>$literal) {
-        foreach($clause2 as $key2=>$literal2) {
-            $theta=resolvement_mgu($literal,$literal2);
+        foreach($clause2 as $key2=>$literal2) {                        
+            $theta=resolvement_mgu($literal,$literal2);            
             if(is_array($theta)) {
-                $clause_copy=$clause;
-                $clause2_copy=$clause2;
+                $clause_copy=clause_copy($clause);
+                $clause2_copy=clause_copy($clause2);
                 unset($clause_copy[$key]);
-                unset($clause2_copy[$key2]);
+                unset($clause2_copy[$key2]);                
+                print_clause($clause);
                 $resolvement=clause_apply_substitution(array_merge($clause_copy, $clause2_copy),$theta);
+                print_clause($clause);
                 print_clause_nonl($clause);print_clause_nonl($clause2);echo " -> ";print_clause_nonl($resolvement);
                 echo "\n";
                 array_push($resolvements, $resolvement);
