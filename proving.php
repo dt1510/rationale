@@ -82,6 +82,12 @@ function clause_apply_substitution($clause, $theta) {
     return $clause;
 }
 
+$clause=array(new Literal("p(X;X2;a)"), new Literal("q(b;Y;X)"));
+print_clause($clause);
+$theta=array();$theta["X"]="Y2";
+$clause=clause_apply_substitution($clause, $theta);
+print_clause($clause);
+
 #Returns a clause whose variables do not intersect with $vars.
 function standarize_apart_clause($clause, $vars) {
     $clause_vars=get_clause_vars($clause);
@@ -128,7 +134,7 @@ class Literal {
     
     public function apply_substitution($theta) {
         foreach($theta as $var=>$replacement) {
-            replace_var($var, $replacement);
+            $this->replace_var($var, $replacement);
         }
     }
 
@@ -137,19 +143,20 @@ class Literal {
 #        
 #    }
 
-    public function standarize_apart($literal) {      
-        $vars=$this->get_vars();
-        $vars2=$literal->get_vars();
-        $all_vars=array_values(array_unique(array_merge($vars,$vars2)));
-        $common_vars=array_intersect($vars,$vars2);
-        $new_literal=clone $this;
-        foreach($common_vars as $var) {
-            $different_var=generate_different_var($all_vars);
-            $new_literal->replace_var($var, $different_var);
-            array_push($all_vars, $different_var);
-        }
-        return $new_literal;
-    }
+#    public function standarize_apart($literal) {
+#        $literal->get_vars();
+#        $vars=$this->get_vars();
+#        $vars2=$literal->get_vars();
+#        $all_vars=array_values(array_unique(array_merge($vars,$vars2)));
+#        $common_vars=array_intersect($vars,$vars2);
+#        $new_literal=clone $this;
+#        foreach($common_vars as $var) {
+#            $different_var=generate_different_var($all_vars);
+#            $new_literal->replace_var($var, $different_var);
+#            array_push($all_vars, $different_var);
+#        }
+#        return $new_literal;
+#    }
     
     public function to_string() {
         $string=($this->is_negative()?"-":"").($this->predicate);
@@ -330,30 +337,22 @@ function resolvement_mgu($literal, $literal2) {
 #print_r1k($mgu);
 
 #TODO
-#Applies the substitution $substitution to the $literal.
-function substituted_literal($literal, $substitution) {
-    return false;
-}
-
-#TODO
 #A clause here is a set of the Literal objects.
 function get_resolvements($clause, $clause2) {
-    $vars=get_clause_vars($clause);
-    $vars2=get_clause_vars($clause2);
-    $theta=standarize_apart_vars($vars,$vars2);
     $resolvements=array();
+    return $resolvements;
+    $vars=get_clause_vars($clause);
+    $clause2=standarize_apart_clause($vars);
     foreach($clause as $key=>$literal) {
         foreach($clause2 as $key2=>$literal2) {            
-            #$literal2=$literal2->standarize_apart($literal);                     
-            #$theta=resolvement_mgu($literal,$literal2);
+            $theta=resolvement_mgu($literal,$literal2);
             $theta=array();
             if($theta) {
                 $clause_copy=$clause;
                 $clause2_copy=$clause2;
                 unset($clause_copy[$key]);
                 unset($clause2_copy[$key2]);
-                $resolvement=array_merge($clause_copy, $clause2_copy);
-                array_push($resolvement, substituted_literal($literal, $theta));
+                $resolvement=clause_apply_substitution(array_merge($clause_copy, $clause2_copy),$theta);
                 array_push($resolvements, $resolvement);
             }
         }        

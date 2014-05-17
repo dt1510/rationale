@@ -60,4 +60,13 @@ function print_3dr($array3d) {
         print_2dr1($array2d);
     }
 }
+
+#Prints an array of Literals.
+function print_clause($clause) {
+    echo "[";
+    foreach($clause as $literal) {
+        echo $literal->to_string()." ";
+    }
+    echo "]\n";
+}
 ?>
