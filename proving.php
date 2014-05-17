@@ -106,7 +106,7 @@ class Literal {
         $vars=$this->get_variables();
         $vars2=$literal->get_variables();
         $all_vars=array_values(array_unique(array_merge($vars,$vars2)));
-        $common_vars=array_intersect($vars,$vars);
+        $common_vars=array_intersect($vars,$vars2);
         $new_literal=clone $this;
         foreach($common_vars as $var) {
             $different_var=generate_different_var($all_vars);
@@ -251,9 +251,9 @@ function mgu_args($args, $args2) {
     return $mgu;
 }
 
-$args=array("X1","X2","a");
-$args2=array("Y1","a","Y2");
-print_r1k(mgu_args($args,$args2));
+#$args=array("X1","X2","a");
+#$args2=array("Y1","a","Y2");
+#print_r1k(mgu_args($args,$args2));
 
 #Replaces a variable in an argument.
 #TODO function symbol support.
@@ -262,19 +262,21 @@ function replace_var($arg, $var, $replacement) {
 }
 
 #TODO
+#FIXME first needs to standarize apart outside, then it can return the mgu for the two clauses, otherwise it would need to return two mgus, one for each clause.
 #TODO make this work with the function symbols.
 #Returns the mgu if the clauses can be resolved.
 function resolvement_mgu($literal, $literal2) {
     if($literal->get_predicate()!=$literal2->get_predicate())
         return false;
     $standarized_apart_literal=$literal2->standarize_apart($literal);
+    echo $standarized_apart_literal->to_string();
     return mgu_args($literal->get_arguments(), $standarized_apart_literal->get_arguments());
 }
 
 $l1=new Literal("p(X1;X2;a)");
-$l2=new Literal("p(Y1;a;Y2)");
+$l2=new Literal("p(X2;a;X3)");
 $mgu=resolvement_mgu($l1,$l2);
-#var_dump($mgu);
+print_r1k($mgu);
 
 #TODO
 #Applies the substitution $substitution to the $literal.
