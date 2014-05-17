@@ -75,6 +75,20 @@ function get_clause_vars($clause) {
     return $vars;
 }
 
+function clause_apply_substitution($clause, $theta) {
+    foreach($clause as $key=>$literal) {
+        $clause[$key]->apply_substitution($theta);
+    }
+    return $clause;
+}
+
+#Returns a clause whose variables do not intersect with $vars.
+function standarize_apart_clause($clause, $vars) {
+    $clause_vars=get_clause_vars($clause);
+    $theta=standarize_apart_vars($clause);
+    return clause_apply_substitution($clause, $theta); 
+}
+
 
 class Literal {
     public $negative=false;
@@ -109,6 +123,12 @@ class Literal {
             if($arg==$var) {
                 $this->arguments[$key]=$replacement;
             }
+        }
+    }
+    
+    public function apply_substitution($theta) {
+        foreach($theta as $var=>$replacement) {
+            replace_var($var, $replacement);
         }
     }
 
@@ -318,9 +338,12 @@ function substituted_literal($literal, $substitution) {
 #TODO
 #A clause here is a set of the Literal objects.
 function get_resolvements($clause, $clause2) {
+    $vars=get_clause_vars($clause);
+    $vars2=get_clause_vars($clause2);
+    $theta=standarize_apart_vars($vars,$vars2);
     $resolvements=array();
     foreach($clause as $key=>$literal) {
-        foreach($clause2 as $key2=>$literal2) {
+        foreach($clause2 as $key2=>$literal2) {            
             #$literal2=$literal2->standarize_apart($literal);                     
             #$theta=resolvement_mgu($literal,$literal2);
             $theta=array();
