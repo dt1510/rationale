@@ -227,44 +227,26 @@ function mgu_args($args, $args2) {
     $args2=array_values($args2);
     $size=max(count($args),count($args2));
     for($i=0; $i<$size; $i++) {
-#        if($args[$i]=="X" && $args2[$i]=="d") {
-#            print_r1($args);
-#            print_r1($args2);
-#            echo "HERE";
-#        }
         if(is_var($args[$i]) && is_var($args2[$i])) {
-            $var=$args[$i];            
-            array_push($mgu, array($args[$i],$args2[$i]));
-            foreach($args as $key1=>$arg1) {
-                $args[$key1]=replace_var($args[$key1], $args[$i], $args2[$i]);
-            }
-            foreach($args2 as $key2=>$arg2) {
-                $args2[$key2]=replace_var($args2[$key2], $args[$i], $args2[$i]);
-            }
+            $var=$args[$i];
+            $replacement=$args2[$i];            
         } else if(is_var($args[$i]) && is_term($args2[$i])) {
             $var=$args[$i];
-            $term=$args2[$i];
-            array_push($mgu, array($var,$term));
-            foreach($args as $key=>$arg) {
-                $args[$key]=replace_var($args[$key], $var, $term);
-            }
-            foreach($args2 as $key2=>$arg2) {                
-                $args2[$key2]=replace_var($args2[$key2], $var, $term);
-            }            
+            $replacement=$args2[$i];
         } else if(is_term($args[$i]) && is_var($args2[$i])) {
-            array_push($mgu, array($args2[$i],$args[$i]));
-            foreach($args as $key1=>$arg1) {
-                $args[$key1]=replace_var($args[$key1], $args2[$i], $args[$i]);
-            }
-            foreach($args2 as $key2=>$arg2) {
-                $args2[$key2]=replace_var($args2[$key2], $args2[$i], $args[$i]);
-            }            
+            $var=$args2[$i];
+            $replacement=$args[$i];
         } else if(is_term($args[$i]) && is_term($args2[$i])) {            
             if($args[$i]!=$args2[$i])
                 return false;
-            
+            continue;            
         }
-        
+
+        array_push($mgu, array($var,$replacement));
+        foreach($args as $key=>$arg)
+            $args[$key]=replace_var($args[$key], $var, $replacement);
+        foreach($args2 as $key2=>$arg2)
+            $args2[$key2]=replace_var($args2[$key2], $var, $replacement);
     }
     return $mgu;
 }
@@ -287,15 +269,15 @@ function replace_var($arg, $var, $replacement) {
     return ($arg==$var)?$replacement:$arg;
 }
 
-$args=array("X","X");
-$args2=array("a","b");
+$args=array("X","Y");
+$args2=array("a","X");
 
 #echo mgu_args($args, $args2)."\n";
 $mgu=mgu_args($args, $args2);
 echo "mgu ";
-var_dump($mgu);
+//var_dump($mgu);
 //echo "\nmgu ";
-//print_2dr1($mgu);
+print_2dr1($mgu);
 echo "---------\n";
 
 #TODO
