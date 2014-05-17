@@ -19,8 +19,8 @@ $examples=get_examples_formulas($content);
 $negative_examples=get_negative_examples_formulas($content);
 $induction_field=get_induction_field($content);
 $hypotheses=get_hypotheses($examples, $negative_examples, $background, $induction_field);
-#echo count($hypotheses)." hypotheses:\n";
-#print_3dr($hypotheses);
+echo count($hypotheses)." hypotheses:\n";
+print_3dr($hypotheses);
 
 function union($theory1, $theory2) {
     return array_merge($theory1, $theory2);
@@ -35,6 +35,8 @@ function get_hypotheses($examples, $negative_examples, $background, $induction_f
     foreach($hypotheses as $hypothesis) {
         if(!entails_negative_examples($background, $hypothesis, $negative_examples) && is_consistent(union($background, $hypothesis))) {
             array_push($consistent_hypotheses, $hypothesis);
+        } else {
+            echo "inconsistent ";print_2dr1($hypothesis);
         }
     }
     return $consistent_hypotheses;
@@ -43,7 +45,9 @@ function get_hypotheses($examples, $negative_examples, $background, $induction_f
 #Negative examples are in the dnf form, not cnf.
 function entails_negative_examples($background, $hypothesis, $negative_examples) {
     foreach($negative_examples as $negative_example) {
-        if(entails_clause(union($background, $hypothesis),$negative_example))
+#        if(!is_consistent(union(union($background, $hypothesis), array("-".$negative_example))))
+#            return true;
+       if(entails_clause(union($background, $hypothesis),$negative_example))
             return true;
     }
     return false;
