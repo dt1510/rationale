@@ -34,6 +34,19 @@ function print_r1k($array) {
     echo "\n";
 }
 
+function print_2drk($array2d) {
+       echo "[";
+    foreach($array2d as $array1d) {
+        echo "[";
+        foreach($array1d as $key=>$value) {
+            echo $key."=>".$value." ";
+        }
+        echo "]";
+    }
+    echo "]";
+    echo "\n";
+}
+
 #Prints a 2d array on a single line.
 function print_2dr1($array2d) {
 #    if($array2d==false) {
@@ -58,6 +71,12 @@ function print_2dr1($array2d) {
 function print_3dr($array3d) {
     foreach($array3d as $array2d) {
         print_2dr1($array2d);
+    }
+}
+
+function print_3drk($array3d) {
+    foreach($array3d as $array2d) {
+        print_2dr1k($array2d);
     }
 }
 

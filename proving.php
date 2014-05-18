@@ -232,7 +232,7 @@ function literal_arrangement($clause, $clause2) {
     $matches=array();
     foreach($clause2 as $key2=>$literal2) {
         foreach($clause as $key=>$literal) {
-            if(subsumes($literal, $literal2)) {
+            if(subsumes_literal($literal, $literal2)) {
                 $clause2_copy=$clause2;
                 unset($clause2_copy[$key2]);
                 $matches2=literal_arrangement($clause, $clause2_copy);
@@ -248,7 +248,8 @@ function literal_arrangement($clause, $clause2) {
 
 $clause=array(new Literal("p(a)"), new Literal("q(b)"));
 $clause2=array(new Literal("p(a)"), new Literal("q(b)"));
-#$arrangement
+$matches=literal_arrangement($clause, $clause2);
+print_2drk($matches);
 
 #Returns a substitution to be applied on the $vars to standarize them apart from the variables $var2.
 function standarize_apart_vars($vars, $vars2) {
