@@ -32,6 +32,10 @@ function union($theory1, $theory2) {
 #Each hypothesis is a cnf formula.
 function get_hypotheses($examples, $negative_examples, $background, $induction_field) {
     $subsumer=get_hypotheses_subsumer($examples, $background, $induction_field);
+    $induction_field_objects=literal_objects($induction_field);
+    $generalized_subsumer=antisubsume_by_induction_field($subsumer, $induction_field_objects);
+    echo "Generalized by induction field ";
+    print_2dr($generalized_subsumer);
     //Need to check the consistency and explanation conditions?
     $hypotheses=antisubsumed_formulas($subsumer);
     $consistent_hypotheses=array();
