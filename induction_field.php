@@ -47,8 +47,8 @@ function get_domain($theory) {
 #A cnf is in an induction field iff it has a ground instance whose literals are in the induction field.
 #$induction_field_objects consists of Literal objects.
 #$domain is a subset of the Herband universe.
-function in_induction_field($cnf, $induction_field_objects, $domain) {
-    return grounded_in_induction_field(literals_from_cnf($cnf), $induciton_field_objects);    
+function in_induction_field($cnf, $induction_field_objects) {
+    return grounded_in_induction_field(literals_from_cnf($cnf), $induction_field_objects);    
 }
 
 #Returns true iff there exists a substitution theta such that $literals theta subset of $induction_field.

@@ -35,16 +35,23 @@ function get_hypotheses($examples, $negative_examples, $background, $induction_f
     $induction_field_objects=literal_objects($induction_field);
     $generalized_subsumer=antisubsume_by_induction_field($subsumer, $induction_field_objects);
     echo "Generalized by induction field ";
-    print_2dr($generalized_subsumer);
+    print_2dr1($generalized_subsumer);
     //Need to check the consistency and explanation conditions?
     $hypotheses=antisubsumed_formulas($subsumer);
     $consistent_hypotheses=array();
     foreach($hypotheses as $hypothesis) {
-        if(!entails_negative_examples($background, $hypothesis, $negative_examples) && is_consistent(union($background, $hypothesis))) {
+        if(almost_correct_hypothesis($hypothesis, $background, $negative_examples, $induction_field_objects)) {
             array_push($consistent_hypotheses, $hypothesis);
         }
     }
     return $consistent_hypotheses;
+}
+
+#Does not check for the condition B union H |= E
+function almost_correct_hypothesis($hypothesis, $background, $negative_examples, $induction_field_objects) {
+    return in_induction_field($hypothesis, $induction_field_objects)
+        && !entails_negative_examples($background, $hypothesis, $negative_examples)
+        && is_consistent(union($background, $hypothesis));
 }
 
 #Negative examples are in the dnf form, not cnf.
