@@ -2,6 +2,7 @@
 %Induction field
 woman(alice).
 -woman(alice).
+-female(alice).
 %Background knowledge
 female(alice).
 male(john).
