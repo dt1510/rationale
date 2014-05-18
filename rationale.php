@@ -18,7 +18,6 @@ $content=file_get_contents($learning_problem_file);
 $background=get_background_knowledge_formulas($content);
 $examples=get_examples_formulas($content);
 $negative_examples=get_negative_examples_formulas($content);
-print_2dr1($negative_examples);
 $induction_field=get_induction_field($content);
 $hypotheses=get_hypotheses($examples, $negative_examples, $background, $induction_field);
 echo count($hypotheses)." hypotheses:\n";
@@ -37,8 +36,6 @@ function get_hypotheses($examples, $negative_examples, $background, $induction_f
     foreach($hypotheses as $hypothesis) {
         if(!entails_negative_examples($background, $hypothesis, $negative_examples) && is_consistent(union($background, $hypothesis))) {
             array_push($consistent_hypotheses, $hypothesis);
-        } else {
-            #echo "inconsistent ";print_2dr1($hypothesis);
         }
     }
     return $consistent_hypotheses;
