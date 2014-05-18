@@ -182,6 +182,25 @@ class Literal {
     }
 }
 
+#Returns true iff $literal subsumes the $literal2 iff there exists a substitution $theta such that $theta $literal = $literal2
+function subsumes_literal($literal, $literal2) {
+    return false;
+    if(compatible_literals($literal, $literal2)) {
+        $vars=$literal->get_vars();
+        $vars2=$literal2->get_vars();
+        $theta=standarize_apart_vars($vars, $vars2);
+        if(!is_substitution($theta))
+            return false;
+        $literal->apply_substitution($theta);
+        $args=$literal->get_args();
+        $args2=$literal2->get_args();
+        $theta2=args_substitution($args, $args2);
+        if(!is_substitution($theta2))
+            return false;
+    }
+    return true;
+}
+
 #Returns a substitution to be applied on the $vars to standarize them apart from the variables $var2.
 function standarize_apart_vars($vars, $vars2) {
     $substitution=array();
@@ -276,6 +295,48 @@ function is_var($arg) {
 
 function is_term($arg) {
     return strlen($arg)>0 && !ctype_upper($arg[0]);
+}
+
+#Returns a substitution $theta so that $theta $args = $args2 if one exists, or false otherwise.
+#TODO function symbols support.
+function args_substitution($args, $args2) {
+    $theta=array();
+    $args=array_values($args);
+    $args2=array_values($args2);
+    $size=max(count($args),count($args2));
+    for($i=0; $i<$size; $i++) {
+        if(is_var($args[$i]) && is_var($args2[$i])) {
+            $var=$args[$i];
+            $replacement=$args2[$i];            
+        } else if(is_var($args[$i]) && is_term($args2[$i])) {
+            $var=$args[$i];
+            $replacement=$args2[$i];
+        } else if(is_term($args[$i]) && is_var($args2[$i])) {
+            return false;
+        } else if(is_term($args[$i]) && is_term($args2[$i])) {            
+            if($args[$i]!=$args2[$i])
+                return false;
+            continue;        
+        }
+
+        $theta[$var]=$replacement;
+        foreach($args as $key=>$arg)
+            $args[$key]=replace_var($args[$key], $var, $replacement);
+    }
+    return $theta;
+}
+
+#$args=array("a", "X", "Z");
+#$args2=array("Y", "b", "a");
+#$theta=args_substitution($args, $args2);
+#if(is_substitution($theta)) {
+#    print_r1k($theta);
+#} else {
+#    echo "no substitution\n";
+#}
+
+function is_substitution($theta) {
+    return is_array($theta);
 }
 
 #TODO case with all args vars
