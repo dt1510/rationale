@@ -2,11 +2,27 @@
 
 include_once "proving.php";
 
+#Generalizes the $cnf theory by removing the literals whose ground instances not in the induction_field.
+#This procedure preserves the completeness.
+function antisubsume_by_induction_field($cnf, $induction_field_objects) {
+    foreach($cnf as $clause_key=>$clause) {
+        foreach($clause as $literal_key=>$literal) {
+            if(!grounded_in_induction_field(array(new Literal($literal)), $induction_field_objects)) {
+                unset($cnf[$clause_key][$literal_key]);
+            }
+        }
+    }
+    return $cnf;
+}
+
+#$induction_field=array(new Literal("s(X)"), new Literal("-s(Y)"), new Literal("p(c,X)"));
+#$cnf=array(array("s(a)","s(b)","-s(X)","p(d,d)"));
+#print_2dr1(antisubsume_by_induction_field($cnf,$induction_field));
+
 #TODO function support.
-#$literal string
-function get_ground_instances_from_literal($literal) {
+function get_ground_instances_from_literal($literal_string) {
     $ground_instances=array();
-    foreach(get_args($literal) as $arg) {
+    foreach(get_args($literal_string) as $arg) {
         if(is_term($arg)) {
             array_push($ground_instances, $arg);
         }
@@ -14,8 +30,8 @@ function get_ground_instances_from_literal($literal) {
     return $ground_instances;
 }
 
-$cnf=array(array("a","b"),array("c","-d"));
-print_r1($cnf);
+#$cnf=array(array("p(a)","p(b)","s(X;c)"),array("r(d;e)","-t(f;X;g)"));
+#print_r1(get_domain($cnf));
 
 #Returns the ground instances from the cnf or dnf theory.
 function get_domain($theory) {
