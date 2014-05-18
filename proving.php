@@ -182,13 +182,14 @@ class Literal {
     }
 }
 
+#echo "subsumes_literal ".subsumes_literal_string("p(X;Y;c)","p(a;X;c)")."\n";
+
 function subsumes_literal_string($literal_string, $literal_string2) {
     return subsumes_literal(new Literal($literal_string), new Literal($literal_string2));	
 }
 
 #Returns true iff $literal subsumes the $literal2 iff there exists a substitution $theta such that $theta $literal = $literal2
-function subsumes_literal($literal, $literal2) {
-    return false;
+function subsumes_literal($literal, $literal2) {    
     if(compatible_literals($literal, $literal2)) {
         $vars=$literal->get_vars();
         $vars2=$literal2->get_vars();
@@ -201,8 +202,9 @@ function subsumes_literal($literal, $literal2) {
         $theta2=args_substitution($args, $args2);
         if(!is_substitution($theta2))
             return false;
+        return true;
     }
-    return true;
+    return false;
 }
 
 #Returns a substitution to be applied on the $vars to standarize them apart from the variables $var2.
