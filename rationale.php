@@ -46,7 +46,7 @@ function get_hypotheses($examples, $negative_examples, $background, $induction_f
 #            #print_2dr1($hypothesis);
 #        }
         if(almost_correct_hypothesis($hypothesis, $background, $negative_examples, $induction_field_objects)) {
-            array_push($consistent_hypotheses, $hypothesis);
+            array_push($consistent_hypotheses, prune_subsumed_theory_literals($hypothesis));
         }
     }
     return $consistent_hypotheses;
@@ -100,14 +100,19 @@ function get_hypotheses_subsumer($examples, $background, $induction_field) {
     $tautologies=generate_tautologies($induction_field);
     echo "Tautologies ";print_2dr1($tautologies);
     echo "Most general bridge theory ";print_2dr1($bridge);    
-    $subsumer=prune_duplicate_theory_literals(remove_tautologies(remove_properly_subsumed(complement(union($bridge,$tautologies)))));
+    $subsumer=prune_subsumed_theory_literals(remove_tautologies(remove_properly_subsumed(complement(union($bridge,$tautologies)))));
     echo "Most specific hypothesis ";print_2dr1($subsumer);
     return $subsumer;
 }
 
-function prune_duplicate_theory_literals($theory) {
+#$cnf=array(array("f(a)","f(X)"));
+#$cnf2=prune_subsumed_theory_literals($cnf);
+#print "-----\n";
+#print_2dr1($cnf2);
+
+function prune_subsumed_theory_literals($theory) {
     foreach($theory as $key=>$clause) {
-        $theory[$key]=prune_duplicate_literals($clause);
+        $theory[$key]=prune_subsumed_literals($clause);
     }
     return $theory;
 }
@@ -151,7 +156,7 @@ function cnf_subsumes($cnf1, $cnf2) {
     return true;
 }
 
-#FIXME does not handle (?).
+#FIXME does not handle an empty $cnf and falsity.
 #If after possible rearranging the strings of the formulas are equal.
 function cnfs_syntactically_equivalent($cnf1, $cnf2) {
     $cnf1=array_values($cnf1);
@@ -209,8 +214,8 @@ function prune_subsumed_literals($clause) {
     $clause=array_values($clause);
     $n=count($clause);
     for($i=0; $i<$n; $i++) {
-        for($j=$i+1;$j<$n; $j++) {
-            if(isset($clause[$i])&&isset($clause[$j])&&subsumes_literal_string($clause[$i],$clause[$j])) {
+        for($j=0;$j<$n; $j++) {
+            if($i!=$j && isset($clause[$i])&&isset($clause[$j])&&subsumes_literal_string($clause[$i],$clause[$j])) {
                 unset($clause[$j]);
             }
         }
@@ -219,6 +224,7 @@ function prune_subsumed_literals($clause) {
 }
 
 function antisubsumed_formulas($subsumer) {
+    $subsumer=prune_subsumed_theory_literals($subsumer);
     $formulas=antisubsumed_formulas_from_dropping($subsumer);
     $formulas2=array();
     foreach($formulas as $formula) {    
@@ -230,8 +236,8 @@ function antisubsumed_formulas($subsumer) {
 function antiinstantiate($formula, $terms) {
     $terms=array_values($terms);
     foreach($terms as $key=>$term)
-        $formula=replace_term($formula, $term, "X_$key");
-    return $formula;
+        $formula=replace_term($formula, $term, "X_$key");    
+    return prune_subsumed_theory_literals($formula);
 }
 
 function replace_term($cnf, $term, $replacement) {
@@ -493,7 +499,7 @@ function complement($cnf) {
         }
     }
     end_while:
-    return prune_duplicate_theory_literals($cnf_complement);
+    return prune_subsumed_theory_literals($cnf_complement);
 }
 
 function negation($literal) {
