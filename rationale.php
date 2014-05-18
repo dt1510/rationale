@@ -42,7 +42,6 @@ function get_hypotheses($examples, $negative_examples, $background, $induction_f
     $hypotheses=antisubsumed_formulas($generalized_subsumer);
     $consistent_hypotheses=array();
     foreach($hypotheses as $hypothesis) {
-#        print_2dr1($hypothesis);
         if(in_induction_field($hypothesis, $induction_field_objects)) {
             print_2dr1($hypothesis);
         }
