@@ -7,6 +7,21 @@ include_once "proving.php";
 function antisubsume_by_induction_field($cnf, $induction_field_objects) {
     foreach($cnf as $clause_key=>$clause) {
         foreach($clause as $literal_key=>$literal) {
+            $literal_object=new Literal($literal);
+            foreach($induction_field_objects as $induction_literal) {
+                if(compatible_literals($literal_object, $induction_literal))
+                    continue 2;
+            }
+            unset($cnf[$clause_key][$literal_key]);            
+        }
+    }
+    return $cnf;
+}
+
+#This one probably does not, but generalizes more.
+function antisubsume_by_induction_field2($cnf, $induction_field_objects) {
+    foreach($cnf as $clause_key=>$clause) {
+        foreach($clause as $literal_key=>$literal) {
             if(!grounded_in_induction_field(array(new Literal($literal)), $induction_field_objects)) {
                 unset($cnf[$clause_key][$literal_key]);
             }

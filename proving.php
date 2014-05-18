@@ -332,11 +332,15 @@ function resolvement_mgu($literal, $literal2) {
 }
 
 function mgu($literal, $literal2) {
+    return compatible_literals($literal, $literal2) && mgu_args($literal->get_args(), $literal2->get_args());
+}
+
+function compatible_literals($literal, $literal2) {
     if($literal->get_predicate()!=$literal2->get_predicate())
         return false;
     if((((bool)$literal->is_negative()) ^ ((bool)$literal2->is_negative())))
         return false;
-    return mgu_args($literal->get_args(), $literal2->get_args());
+    return true;
 }
 
 function clause_copy($clause) {
