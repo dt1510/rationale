@@ -375,6 +375,7 @@ function clause_subsumes($clause, $subsumed_clause) {
     #For grounded case: $clause subsumes $subsumed_clause iff $clause subset of $subsumed_clause.
     foreach($clause as $literal) {
         foreach($subsumed_clause as $subsumed_literal) {
+#            if(subsumes_literal_string($literal, $subsumed_literal)) {
             if(instance_of($subsumed_literal, $literal)) {
                 goto subsumed_so_far;
             }
@@ -384,6 +385,10 @@ function clause_subsumes($clause, $subsumed_clause) {
     }
     return true;
 }
+
+#function clause_subsumes($clause, $subsumed_clause) {
+#    return false;
+#}
 
 #TODO make this work with the ungrounded case too.
 function instance_of($subsumed_literal, $literal) {

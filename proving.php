@@ -207,6 +207,46 @@ function subsumes_literal($literal, $literal2) {
     return false;
 }
 
+#TODO
+#$clause is an array of the Literal objects.
+#Do not confuse with the clause_subsumes function.
+function subsumes_clause($clause, $clause2) {
+    $clause=array_values($clause);
+    $clause2=array_values($clause2);
+    foreach($clause2 as $literal2) {
+        foreach($clause as $key=>$literal) {
+            if(subsumes($literal, $literal2)) {
+                
+            }
+        }
+    }
+    return false;
+}
+
+#TODO
+#Returns the pairs of the matches for the literals from different clauses. Pair <i,j> says that a literal Mi in $clause2 is subsumed by the literal Lj in $clause.
+function literal_arrangement($clause, $clause2) {
+    $matches=array();
+    foreach($clause2 as $key2=>$literal2) {
+        foreach($clause as $key=>$literal) {
+            if(subsumes($literal, $literal2)) {
+                $clause2_copy=$clause2;
+                unset($clause2_copy[$key2]);
+                $matches2=literal_arrangement($clause, $clause2_copy);
+                foreach($matches2 as $match2) {
+                    $match2[$key2]=$key;
+                    array_push($matches,$match);
+                }
+            }
+        }
+    }
+    return $matches;
+}
+
+$clause=array(new Literal("p(a)"), new Literal("q(b)"));
+$clause2=array(new Literal("p(a)"), new Literal("q(b)"));
+#$arrangement
+
 #Returns a substitution to be applied on the $vars to standarize them apart from the variables $var2.
 function standarize_apart_vars($vars, $vars2) {
     $substitution=array();
