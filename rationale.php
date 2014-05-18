@@ -205,6 +205,19 @@ function prune_duplicate_literals($clause) {
     return array_values($clause);
 }
 
+function prune_subsumed_literals($clause) {
+    $clause=array_values($clause);
+    $n=count($clause);
+    for($i=0; $i<$n; $i++) {
+        for($j=$i+1;$j<$n; $j++) {
+            if(isset($clause[$i])&&isset($clause[$j])&&subsumes_literal_string($clause[$i],$clause[$j])) {
+                unset($clause[$j]);
+            }
+        }
+    }
+    return array_values($clause);
+}
+
 function antisubsumed_formulas($subsumer) {
     $formulas=antisubsumed_formulas_from_dropping($subsumer);
     $formulas2=array();
