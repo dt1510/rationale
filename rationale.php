@@ -37,7 +37,7 @@ function get_hypotheses($examples, $negative_examples, $background, $induction_f
     echo "Generalized by induction field ";
     print_2dr1($generalized_subsumer);
     //Need to check the consistency and explanation conditions?
-    $hypotheses=antisubsumed_formulas($subsumer);
+    $hypotheses=antisubsumed_formulas($generalized_subsumer);
     $consistent_hypotheses=array();
     foreach($hypotheses as $hypothesis) {
         if(almost_correct_hypothesis($hypothesis, $background, $negative_examples, $induction_field_objects)) {
