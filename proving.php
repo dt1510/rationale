@@ -182,6 +182,10 @@ class Literal {
     }
 }
 
+function subsumes_literal_string($literal_string, $literal_string2) {
+    return subsumes_literal(new Literal($literal_string), new Literal($literal_string2));	
+}
+
 #Returns true iff $literal subsumes the $literal2 iff there exists a substitution $theta such that $theta $literal = $literal2
 function subsumes_literal($literal, $literal2) {
     return false;
