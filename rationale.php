@@ -5,6 +5,7 @@
 /* Date:   May 2014                                                           */
 /******************************************************************************/
 #Theories and produced hypotheses are in cnf, e.g. array(array("a","b"),array("c","-d")).
+#Literals in rationale.php are strings, literals in proving.php are Literal objects.
 
 DEFINE("ARGUMENT_SEPARATOR", ";");
 include_once "print.php";
@@ -37,32 +38,32 @@ function get_hypotheses($examples, $negative_examples, $background, $induction_f
         if(!entails_negative_examples($background, $hypothesis, $negative_examples) && is_consistent(union($background, $hypothesis))) {
             array_push($consistent_hypotheses, $hypothesis);
         } else {
-            echo "inconsistent ";print_2dr1($hypothesis);
+            #echo "inconsistent ";print_2dr1($hypothesis);
         }
     }
     return $consistent_hypotheses;
 }
 
 #Negative examples are in the dnf form, not cnf.
-#TODO Support general clausal examples.
 function entails_negative_examples($background, $hypothesis, $negative_examples) {
     foreach($negative_examples as $negative_example) {
-        if(entails_literal(union($background, $hypothesis),$negative_example[0])) {
+        if(entails_clause(union($background, $hypothesis),$negative_example)) {
             return true;
         }
     }
     return false;
 }
 
-#TODO use system Progol, Clingo, Otter or other theorem prover, otherwise I would need to implement all the algorithms from the scratch myself.
-#If I cannot find something quickly, implement it myself. Why not? It is just a binary resolution with mgu.
-function entails_literal($cnf, $literal) {
-    return !is_consistent(union($cnf,array(array(negation($literal)))));
+function entails_clause($cnf, $clause) {
+    return !is_consistent(union($cnf,clause_negation($clause)));
 }
 
-#TODO
-function entails_clause($cnf, $clause) {
-    return false;
+function clause_negation($clause) {
+    $cnf=array();
+    foreach($clause as $literal) {
+        array_push($cnf, array(negation($literal)));
+    }
+    return $cnf;
 }
 
 function prolog_from_cnf($cnf) {
