@@ -74,4 +74,11 @@ function print_clause($clause) {
     print_clause_nonl($clause);
     echo "\n";
 }
+
+function print_literals($literals) {
+    foreach($literals as $literal) {
+        echo $literal->to_string()." ";
+    }
+    echo "\n";
+}
 ?>

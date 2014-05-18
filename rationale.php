@@ -4,13 +4,14 @@
 /* Author: David Toth (dt1510@imperial.ac.uk)                                 */
 /* Date:   May 2014                                                           */
 /******************************************************************************/
-#Based on the results from the paper Inverse subsumption for complete explanatory induction by Yoshitaka Yamamoto · Katsumi Inoue · Koji Iwanuma
+#Rationale is a prototype ILP system based on the results from the paper Inverse subsumption for complete explanatory induction by Yoshitaka Yamamoto, Katsumi Inoue, Koji Iwanuma.
 #Theories and produced hypotheses are in cnf, e.g. array(array("a","b"),array("c","-d")).
 #Literals in rationale.php are strings, literals in proving.php are Literal objects.
 
 DEFINE("ARGUMENT_SEPARATOR", ";");
 include_once "print.php";
 include_once "proving.php";
+include_once "induction_field.php";
 
 echo "Rationale, Inductive Logic Programming system\n";
 
@@ -62,12 +63,6 @@ function clause_negation($clause) {
         array_push($cnf, array(negation($literal)));
     }
     return $cnf;
-}
-
-#A cnf is in an induction field iff it has a ground instance whose literals are in the induction field.
-#Domain represents the instances over which we can ground.
-function in_induction_field($cnf, $induction_field, $domain) {
-    
 }
 
 function prolog_from_cnf($cnf) {
@@ -140,7 +135,7 @@ function cnf_subsumes($cnf1, $cnf2) {
     return true;
 }
 
-#FIXME does not handle 
+#FIXME does not handle (?).
 #If after possible rearranging the strings of the formulas are equal.
 function cnfs_syntactically_equivalent($cnf1, $cnf2) {
     $cnf1=array_values($cnf1);

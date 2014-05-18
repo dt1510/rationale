@@ -321,14 +321,20 @@ function replace_var($arg, $var, $replacement) {
     return ($arg==$var)?$replacement:$arg;
 }
 
-#TODO
-#FIXME first needs to standarize apart outside, then it can return the mgu for the two clauses, otherwise it would need to return two mgus, one for each clause.
 #TODO make this work with the function symbols.
 #Returns the mgu if the clauses can be resolved.
 function resolvement_mgu($literal, $literal2) {
     if($literal->get_predicate()!=$literal2->get_predicate())
         return false;
     if(!(((bool)$literal->is_negative()) ^ ((bool)$literal2->is_negative())))
+        return false;
+    return mgu_args($literal->get_args(), $literal2->get_args());
+}
+
+function mgu($literal, $literal2) {
+    if($literal->get_predicate()!=$literal2->get_predicate())
+        return false;
+    if((((bool)$literal->is_negative()) ^ ((bool)$literal2->is_negative())))
         return false;
     return mgu_args($literal->get_args(), $literal2->get_args());
 }
