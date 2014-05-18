@@ -471,7 +471,6 @@ function extract_clause($clause_string) {
 }
 
 #$cnf=array(array("a","b"),array("c","-d"));
-#TODO support for complement of true, false, empty cnfs.
 function complement($cnf) {
     if($cnf===false) {
         return array();//true

@@ -226,6 +226,9 @@ function subsumes_clause($clause, $clause2) {
 #TODO
 #Returns the pairs of the matches for the literals from different clauses. Pair <i,j> says that a literal Mi in $clause2 is subsumed by the literal Lj in $clause.
 function literal_arrangement($clause, $clause2) {
+    if(count($clause2)==0) {
+        return array(array());#Return an empty match to which matches higher in the tree could be apended.
+    }
     $matches=array();
     foreach($clause2 as $key2=>$literal2) {
         foreach($clause as $key=>$literal) {
