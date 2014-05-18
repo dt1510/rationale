@@ -16,12 +16,13 @@ function get_ground_instances_from_literal($literal) {
 
 #Returns the ground instances from the cnf or dnf theory.
 function get_domain($theory) {
-    $ground
+    $ground_instances=array();
     foreach($theory as $formula) {
         foreach($formula as $literal) {
-            get_ground_instances_from_literal($literal);
+            $ground_instances=array_merge($ground_instances, get_ground_instances_from_literal($literal));
         }
     }
+    return $ground_instances;
 }
 
 #A cnf is in an induction field iff it has a ground instance whose literals are in the induction field.
