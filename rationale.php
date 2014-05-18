@@ -17,6 +17,7 @@ $content=file_get_contents($learning_problem_file);
 $background=get_background_knowledge_formulas($content);
 $examples=get_examples_formulas($content);
 $negative_examples=get_negative_examples_formulas($content);
+print_2dr1($negative_examples);
 $induction_field=get_induction_field($content);
 $hypotheses=get_hypotheses($examples, $negative_examples, $background, $induction_field);
 echo count($hypotheses)." hypotheses:\n";
@@ -43,20 +44,24 @@ function get_hypotheses($examples, $negative_examples, $background, $induction_f
 }
 
 #Negative examples are in the dnf form, not cnf.
+#TODO Support general clausal examples.
 function entails_negative_examples($background, $hypothesis, $negative_examples) {
     foreach($negative_examples as $negative_example) {
-#        if(!is_consistent(union(union($background, $hypothesis), array("-".$negative_example))))
-#            return true;
-       if(entails_clause(union($background, $hypothesis),$negative_example))
+        if(entails_literal(union($background, $hypothesis),$negative_example[0])) {
             return true;
+        }
     }
     return false;
 }
 
 #TODO use system Progol, Clingo, Otter or other theorem prover, otherwise I would need to implement all the algorithms from the scratch myself.
 #If I cannot find something quickly, implement it myself. Why not? It is just a binary resolution with mgu.
+function entails_literal($cnf, $literal) {
+    return !is_consistent(union($cnf,array(array(negation($literal)))));
+}
+
+#TODO
 function entails_clause($cnf, $clause) {
-    #print_2dr1($cnf); print_r1($clause); echo "*****\n";
     return false;
 }
 
@@ -72,11 +77,6 @@ function prolog_from_clause($clause) {
     $prolog="";
         
 }
-
-##TODO
-#function is_consistent($theory) {
-#    return true;    
-#}
 
 //Produces the most specific hypothesis.
 function get_hypotheses_subsumer($examples, $background, $induction_field) {
