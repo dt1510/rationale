@@ -4,6 +4,7 @@
 /* Author: David Toth (dt1510@imperial.ac.uk)                                 */
 /* Date:   May 2014                                                           */
 /******************************************************************************/
+#Based on the results from the paper Inverse subsumption for complete explanatory induction by Yoshitaka Yamamoto · Katsumi Inoue · Koji Iwanuma
 #Theories and produced hypotheses are in cnf, e.g. array(array("a","b"),array("c","-d")).
 #Literals in rationale.php are strings, literals in proving.php are Literal objects.
 
@@ -61,6 +62,12 @@ function clause_negation($clause) {
         array_push($cnf, array(negation($literal)));
     }
     return $cnf;
+}
+
+#A cnf is in an induction field iff it has a ground instance whose literals are in the induction field.
+#Domain represents the instances over which we can ground.
+function in_induction_field($cnf, $induction_field, $domain) {
+    
 }
 
 function prolog_from_cnf($cnf) {
