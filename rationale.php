@@ -42,7 +42,7 @@ function get_hypotheses($examples, $negative_examples, $background, $induction_f
     $hypotheses=antisubsumed_formulas($generalized_subsumer);
     $consistent_hypotheses=array();
     foreach($hypotheses as $hypothesis) {
-        if(in_induction_field($hypothesis, $induction_field_objects)) {
+        if(in_induction_field($hypothesis, $induction_field_objects) && !entails_negative_examples($background, $hypothesis, $negative_examples)) {
             print_2dr1($hypothesis);
         }
         if(almost_correct_hypothesis($hypothesis, $background, $negative_examples, $induction_field_objects)) {
@@ -398,8 +398,10 @@ function get_objects_between_lines($content,$start_line,$end_line,$logic_object)
         if(strpos($line,$end_line)===0) {
             $get_object=0;
         }
+        if(strlen($line)>0 && $line[0]=="%")
+            continue;
         if($get_object==1) {
-            if(trim($line)==true) {//skip the empty line.
+            if(trim($line)==true) {//skip the empty line and comments
                 if($logic_object==LogicObject::Formula) {
                     array_push($objects,extract_clause($line));
                 } else if($logic_object==LogicObject::Literal) {
