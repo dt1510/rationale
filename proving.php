@@ -332,7 +332,9 @@ function resolvement_mgu($literal, $literal2) {
 }
 
 function mgu($literal, $literal2) {
-    return compatible_literals($literal, $literal2) && mgu_args($literal->get_args(), $literal2->get_args());
+    if(compatible_literals($literal, $literal2))
+        return mgu_args($literal->get_args(), $literal2->get_args());
+    return false;
 }
 
 function compatible_literals($literal, $literal2) {

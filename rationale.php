@@ -33,6 +33,8 @@ function union($theory1, $theory2) {
 function get_hypotheses($examples, $negative_examples, $background, $induction_field) {
     $subsumer=get_hypotheses_subsumer($examples, $background, $induction_field);
     $induction_field_objects=literal_objects($induction_field);
+    $cnf=array(array("woman(alice)"));
+    print_literals($induction_field_objects);
     $generalized_subsumer=antisubsume_by_induction_field($subsumer, $induction_field_objects);
     echo "Generalized by induction field ";
     print_2dr1($generalized_subsumer);
@@ -40,6 +42,10 @@ function get_hypotheses($examples, $negative_examples, $background, $induction_f
     $hypotheses=antisubsumed_formulas($generalized_subsumer);
     $consistent_hypotheses=array();
     foreach($hypotheses as $hypothesis) {
+#        print_2dr1($hypothesis);
+        if(in_induction_field($hypothesis, $induction_field_objects)) {
+            print_2dr1($hypothesis);
+        }
         if(almost_correct_hypothesis($hypothesis, $background, $negative_examples, $induction_field_objects)) {
             array_push($consistent_hypotheses, $hypothesis);
         }

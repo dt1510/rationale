@@ -9,7 +9,7 @@ female(susan).
 male(john).
 %Examples
 woman(alice).
-woman(susan).
+%woman(susan).
 %Negative examples
 woman(john).
 

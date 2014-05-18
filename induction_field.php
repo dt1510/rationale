@@ -72,7 +72,7 @@ function grounded_in_induction_field($literals, $induction_field) {
         return true;
     $literal=array_pop($literals);
     foreach($induction_field as $induction_field_literal) {
-        $mgu=mgu($literal,$induction_field_literal);
+        $mgu=mgu($literal,$induction_field_literal);        
         if(is_array($mgu)) {            
             if(grounded_in_induction_field(substituted_literals($literals, $mgu), $induction_field))
                 return true;                
