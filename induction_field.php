@@ -14,6 +14,9 @@ function get_ground_instances_from_literal($literal) {
     return $ground_instances;
 }
 
+$cnf=array(array("a","b"),array("c","-d"));
+print_r1($cnf);
+
 #Returns the ground instances from the cnf or dnf theory.
 function get_domain($theory) {
     $ground_instances=array();
